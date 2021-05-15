@@ -19,3 +19,20 @@
         }
     }
 }*/
+
+FVector UKeyUtil::TraceToPlane(
+    const FVector& StartPoint, 
+    const FVector& CastDir, 
+    const FVector& PlanePoint, 
+    const FVector& PlaneNormal)
+{
+    FVector StartToPlane = PlanePoint - StartPoint;
+    float DistanceToPlane = FVector::DotProduct(StartToPlane, PlaneNormal);
+    float ParallelCastSpeed = FVector::DotProduct(CastDir, PlaneNormal);
+    if (ParallelCastSpeed == 0.0f)
+    {
+        return FVector::ZeroVector; // Cast is parallel to plane.
+    }
+    float CastScale = DistanceToPlane / ParallelCastSpeed;
+    return StartPoint + (CastScale * CastDir);
+}

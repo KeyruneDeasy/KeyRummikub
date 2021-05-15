@@ -28,28 +28,42 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile);
 
+	UFUNCTION(BlueprintPure)
 	int GetGridSizeX() { return GridSizeX; }
+	UFUNCTION(BlueprintPure)
 	int GetGridSizeY() { return GridSizeY; }
+	UFUNCTION(BlueprintPure)
+	float GetGridSpacingX() { return GridSpacingX; }
+	UFUNCTION(BlueprintPure)
+	float GetGridSpacingY() { return GridSpacingY; }
+
+	UFUNCTION(BlueprintPure)
+	ARummiTileActor* GetTileActorAtWorldLocation(const FVector& WorldLocation);
+
+	UFUNCTION(BlueprintPure)
+	bool IsValidGridIndex(int X, int Y);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	int GridSizeX = 16;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	int GridSizeY = 8;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	float GridSpacingX = 200.0f;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	float GridSpacingY = 200.0f;
 
 	TArray<ARummiTileActor*> GridSpaces;
 
-	FVector ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector);
-	FVector GetLocalSpaceGridTileLocation(int X, int Y);
-	FVector GetLocalSpaceBaseGridTileLocation();
+	FVector ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector) const;
+	FVector ConvertWorldSpaceToLocalSpace(const FVector& LocalSpaceVector) const;
+	FVector GetLocalSpaceGridTileLocation(int X, int Y) const;
+	FVector GetLocalSpaceBaseGridTileLocation() const;
+	FVector GetLocalSpaceTopLeftCorner() const;
 	float GetGridWidth();
 	float GetGridHeight();
 	UFUNCTION(BlueprintCallable)

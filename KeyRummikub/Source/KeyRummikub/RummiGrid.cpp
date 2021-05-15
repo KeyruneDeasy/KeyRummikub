@@ -32,17 +32,22 @@ FVector ARummiGrid::GetWorldSpaceGridTileLocation(int X, int Y)
 	return ConvertLocalSpaceToWorldSpace(GetLocalSpaceGridTileLocation(X, Y));
 }
 
-FVector ARummiGrid::ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector)
+FVector ARummiGrid::ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector) const
 {
 	return GetActorTransform().TransformPosition(LocalSpaceVector);
 }
 
-FVector ARummiGrid::GetLocalSpaceGridTileLocation(int X, int Y)
+FVector ARummiGrid::ConvertWorldSpaceToLocalSpace(const FVector& LocalSpaceVector) const
+{
+	return GetActorTransform().InverseTransformPosition(LocalSpaceVector);
+}
+
+FVector ARummiGrid::GetLocalSpaceGridTileLocation(int X, int Y) const
 {
 	return GetLocalSpaceBaseGridTileLocation() + FVector((float)X * GridSpacingX, (float)Y * GridSpacingY, 0.0f);
 }
 
-FVector ARummiGrid::GetLocalSpaceBaseGridTileLocation()
+FVector ARummiGrid::GetLocalSpaceBaseGridTileLocation() const
 {
 	return FVector((float)(GridSizeX - 1) * GridSpacingX * (-0.5f), (float)(GridSizeY - 1) * GridSpacingY * (-0.5f), 0.0f);
 }
@@ -148,4 +153,33 @@ void ARummiGrid::PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile)
 			}
 		}
 	}
+}
+
+ARummiTileActor* ARummiGrid::GetTileActorAtWorldLocation(const FVector& WorldLocation)
+{
+	FVector LocalLocation = ConvertWorldSpaceToLocalSpace(WorldLocation);
+
+	FVector Corner = GetLocalSpaceTopLeftCorner();
+
+	FVector RelativeLocation = LocalLocation - Corner;
+
+	int X = FMath::Floor(RelativeLocation.X / GridSpacingX);
+	int Y = FMath::Floor(RelativeLocation.Y / GridSpacingY);
+
+	if (IsValidGridIndex(X, Y))
+	{
+		int Index = GetGridIndicesAsArrayIndex(X, Y);
+		return GridSpaces[Index];
+	}
+	return nullptr;
+}
+
+FVector ARummiGrid::GetLocalSpaceTopLeftCorner() const
+{
+	return GetLocalSpaceBaseGridTileLocation() - FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+}
+
+bool ARummiGrid::IsValidGridIndex(int X, int Y)
+{
+	return X >= 0 && X < GridSizeX && Y >= 0 && Y < GridSizeY;
 }
