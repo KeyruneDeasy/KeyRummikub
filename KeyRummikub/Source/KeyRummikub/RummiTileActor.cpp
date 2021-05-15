@@ -21,3 +21,12 @@ void ARummiTileActor::Tick(float DeltaTime)
 
 }
 
+void ARummiTileActor::OnPlacedIntoGrid_Implementation(const FVector& InGridCellLocation)
+{
+	GridCellLocation = InGridCellLocation;
+}
+
+void ARummiTileActor::RevertToGridCellLocation()
+{
+	SetActorLocation(GridCellLocation);
+}

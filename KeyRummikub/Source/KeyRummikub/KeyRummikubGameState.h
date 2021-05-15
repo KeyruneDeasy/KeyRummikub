@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DrawCardFromDeckToHand(int HandIndex);
+
+	UFUNCTION(BlueprintCallable)
+	bool TryMoveTileToWorldLocation(ARummiTileActor* Tile, const FVector& WorldLocation);
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
@@ -52,4 +55,7 @@ private:
 	void CreateTileActors(const FRummiTileArray& Tiles);
 	UFUNCTION(BlueprintCallable)
 	void DealRandomCardsFromDeckOntoBoard();
+	UFUNCTION(BlueprintCallable)
+	void FindTileActorInGrids(ARummiTileActor* Tile, ARummiGrid*& OutGrid, int& OutX, int& OutY);
+	bool TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGrid, int OldX, int OldY, ARummiGrid* NewGrid, int NewX, int NewY);
 };

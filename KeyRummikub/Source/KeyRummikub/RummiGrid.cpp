@@ -157,16 +157,11 @@ void ARummiGrid::PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile)
 
 ARummiTileActor* ARummiGrid::GetTileActorAtWorldLocation(const FVector& WorldLocation)
 {
-	FVector LocalLocation = ConvertWorldSpaceToLocalSpace(WorldLocation);
+	int X, Y;
+	bool bIsValidIndex;
+	GetGridIndexAtWorldLocation(WorldLocation, X, Y, bIsValidIndex);
 
-	FVector Corner = GetLocalSpaceTopLeftCorner();
-
-	FVector RelativeLocation = LocalLocation - Corner;
-
-	int X = FMath::Floor(RelativeLocation.X / GridSpacingX);
-	int Y = FMath::Floor(RelativeLocation.Y / GridSpacingY);
-
-	if (IsValidGridIndex(X, Y))
+	if (bIsValidIndex)
 	{
 		int Index = GetGridIndicesAsArrayIndex(X, Y);
 		return GridSpaces[Index];
@@ -182,4 +177,49 @@ FVector ARummiGrid::GetLocalSpaceTopLeftCorner() const
 bool ARummiGrid::IsValidGridIndex(int X, int Y)
 {
 	return X >= 0 && X < GridSizeX && Y >= 0 && Y < GridSizeY;
+}
+
+void ARummiGrid::GetGridIndexAtWorldLocation(const FVector& WorldLocation, int& OutX, int& OutY, bool& bIsOnGrid)
+{
+	FVector LocalLocation = ConvertWorldSpaceToLocalSpace(WorldLocation);
+
+	FVector Corner = GetLocalSpaceTopLeftCorner();
+
+	FVector RelativeLocation = LocalLocation - Corner;
+
+	OutX = FMath::Floor(RelativeLocation.X / GridSpacingX);
+	OutY = FMath::Floor(RelativeLocation.Y / GridSpacingY);
+
+	bIsOnGrid = IsValidGridIndex(OutX, OutY);
+}
+
+bool ARummiGrid::IsGridSpaceOccupied(int X, int Y)
+{
+	if (IsValidGridIndex(X, Y))
+	{
+		int Index = GetGridIndicesAsArrayIndex(X, Y);
+		return GridSpaces[Index] != nullptr;
+	}
+	return false;
+}
+
+bool ARummiGrid::FindTileActor(ARummiTileActor* TileActor, int& OutX, int& OutY)
+{
+	if (!IsValid(TileActor)) { return false; }
+
+	for (int Y = 0; Y < GridSizeY; ++Y)
+	{
+		for (int X = 0; X < GridSizeX; ++X)
+		{
+			int Index = GetGridIndicesAsArrayIndex(X, Y);
+			if (GridSpaces[Index] == TileActor)
+			{
+				OutX = X;
+				OutY = Y;
+				return true;
+			}
+		}
+	}
+	
+	return false;
 }

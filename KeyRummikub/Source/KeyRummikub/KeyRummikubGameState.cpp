@@ -95,3 +95,77 @@ void AKeyRummikubGameState::DrawCardFromDeckToHand(int HandIndex)
 	ARummiTileActor* TileActor = GetActorFromTileInfo(Tile);
 	HandGrid->PlaceTileAtFirstOpenGridLocation(TileActor);
 }
+
+bool AKeyRummikubGameState::TryMoveTileToWorldLocation(ARummiTileActor* Tile, const FVector& WorldLocation)
+{
+	if (!IsValid(Tile)) { return false; }
+
+	ARummiGrid* OldGrid;
+	int OldX, OldY;
+	FindTileActorInGrids(Tile, OldGrid, OldX, OldY);
+
+	if (!OldGrid)
+	{
+		// ERROR MSG
+		return false;
+	}
+
+	int NewX, NewY;
+	bool bIsOnGrid;
+	BoardGrid->GetGridIndexAtWorldLocation(WorldLocation, NewX, NewY, bIsOnGrid);
+
+	if (bIsOnGrid)
+	{
+		return TryMoveTile(Tile, OldGrid, OldX, OldY, BoardGrid, NewX, NewY);
+	}
+	else
+	{
+		HandGrid->GetGridIndexAtWorldLocation(WorldLocation, NewX, NewY, bIsOnGrid);
+		if (bIsOnGrid)
+		{
+			return TryMoveTile(Tile, OldGrid, OldX, OldY, HandGrid, NewX, NewY);
+		}
+	}
+	return false;
+}
+
+bool AKeyRummikubGameState::TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGrid, int OldX, int OldY, ARummiGrid* NewGrid, int NewX, int NewY)
+{
+	if (!IsValid(Tile) || !IsValid(OldGrid) || !IsValid(NewGrid))
+	{
+		return false;
+	}
+
+	if (NewGrid->IsGridSpaceOccupied(NewX, NewY))
+	{
+		return false;
+	}
+
+	OldGrid->RemoveTileFromGridLocation(OldX, OldY);
+	NewGrid->PlaceTileAtGridLocation(Tile, NewX, NewY);
+
+	return true;
+
+	// TODO: Update the logical representation
+}
+
+void AKeyRummikubGameState::FindTileActorInGrids(ARummiTileActor* Tile, ARummiGrid*& OutGrid, int& OutX, int& OutY)
+{
+	bool Found = BoardGrid->FindTileActor(Tile, OutX, OutY);
+
+	if (Found)
+	{
+		OutGrid = BoardGrid;
+		return;
+	}
+
+	Found = HandGrid->FindTileActor(Tile, OutX, OutY);
+
+	if (Found)
+	{
+		OutGrid = HandGrid;
+		return;
+	}
+
+	OutGrid = nullptr;
+}

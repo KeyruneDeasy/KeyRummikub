@@ -21,13 +21,18 @@ public:
 	FRummiTile TileInfo;
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnPlacedIntoGrid(const FVector& GridCellLocation);
-	void OnPlacedIntoGrid_Implementation(const FVector& GridCellLocation) {}
+	void OnPlacedIntoGrid(const FVector& InGridCellLocation);
+	void OnPlacedIntoGrid_Implementation(const FVector& InGridCellLocation);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnRemovedFromGrid();
 	void OnRemovedFromGrid_Implementation() {}
 
+	UFUNCTION(BlueprintCallable)
+	void RevertToGridCellLocation();
+
 protected:
 	virtual void BeginPlay() override;
+
+	FVector GridCellLocation;
 };

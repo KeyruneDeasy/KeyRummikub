@@ -39,9 +39,16 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	ARummiTileActor* GetTileActorAtWorldLocation(const FVector& WorldLocation);
+	UFUNCTION(BlueprintCallable)
+	void GetGridIndexAtWorldLocation(const FVector& WorldLocation, int& OutX, int& OutY, bool& bIsOnGrid);
 
 	UFUNCTION(BlueprintPure)
 	bool IsValidGridIndex(int X, int Y);
+
+	bool IsGridSpaceOccupied(int X, int Y);
+
+	UFUNCTION(BlueprintCallable)
+	bool FindTileActor(ARummiTileActor* TileActor, int& OutX, int& OutY);
 
 protected:
 	virtual void BeginPlay() override;
