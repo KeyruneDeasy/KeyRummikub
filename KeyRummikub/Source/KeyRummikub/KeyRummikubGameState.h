@@ -24,7 +24,12 @@ public:
 	ARummiTileActor* GetActorFromTileInfo(const FRummiTile& TileInfo);
 	UFUNCTION(BlueprintPure)
 	ARummiTileActor* GetActorFromTileId(int TileId);
+
+
+	UFUNCTION(BlueprintCallable)
+	void DrawCardFromDeckToHand(int HandIndex);
 	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

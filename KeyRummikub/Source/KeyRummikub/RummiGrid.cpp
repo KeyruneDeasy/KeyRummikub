@@ -132,3 +132,20 @@ int ARummiGrid::GetGridIndicesAsArrayIndex(int X, int Y)
 {
 	return Y * GridSizeX + X;
 }
+
+void ARummiGrid::PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile)
+{
+	bool bTilePlaced = false;
+	for (int Y = 0; Y < GridSizeY && !bTilePlaced; ++Y)
+	{
+		for (int X = 0; X < GridSizeX && !bTilePlaced; ++X)
+		{
+			int Index = GetGridIndicesAsArrayIndex(X, Y);
+			if (GridSpaces[Index] == nullptr)
+			{
+				PlaceTileAtGridLocation(Tile, X, Y);
+				bTilePlaced = true;
+			}
+		}
+	}
+}

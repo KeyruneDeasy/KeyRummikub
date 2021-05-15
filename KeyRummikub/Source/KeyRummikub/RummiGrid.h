@@ -25,6 +25,8 @@ public:
 	void PlaceTileAtGridLocation(ARummiTileActor* Tile, int X, int Y);
 	UFUNCTION(BlueprintCallable)
 	ARummiTileActor* RemoveTileFromGridLocation(int X, int Y);
+	UFUNCTION(BlueprintCallable)
+	void PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile);
 
 	int GetGridSizeX() { return GridSizeX; }
 	int GetGridSizeY() { return GridSizeY; }
@@ -33,14 +35,14 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int GridSizeX = 16;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int GridSizeY = 8;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float GridSpacingX = 200.0f;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float GridSpacingY = 200.0f;
 
 	TArray<ARummiTileActor*> GridSpaces;

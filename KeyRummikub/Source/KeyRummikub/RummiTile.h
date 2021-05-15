@@ -6,7 +6,7 @@
 #include "RummiTile.generated.h"
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct KEYRUMMIKUB_API FRummiRuleset
 {
 	GENERATED_BODY()
@@ -14,11 +14,17 @@ struct KEYRUMMIKUB_API FRummiRuleset
 public:
 	FRummiRuleset() {}
 
+	UPROPERTY(BlueprintReadOnly)
 	int NumColors = 4;
+	UPROPERTY(BlueprintReadOnly)
 	int NumNumbers = 13;
+	UPROPERTY(BlueprintReadOnly)
 	int NumRepetitions = 2; // The number of copies of each unique tile
+	UPROPERTY(BlueprintReadOnly)
 	int LowestNumber = 1;
+	UPROPERTY(BlueprintReadOnly)
 	int NumPlayers = 2;
+	UPROPERTY(BlueprintReadOnly)
 	int StartingHandSize = 14;
 };
 

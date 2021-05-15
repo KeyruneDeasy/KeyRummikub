@@ -19,6 +19,10 @@ void AKeyRummikubGameState::BeginPlay()
 		{
 			BoardGrid = Grid;
 		}
+		else if (Grid->ActorHasTag(FName(TEXT("HandGrid"))))
+		{
+			HandGrid = Grid;
+		}
 	}
 }
 
@@ -27,6 +31,7 @@ void AKeyRummikubGameState::InitializeTable()
 	Table.InitializeDeck(Ruleset);
 	CreateTileActors(Table.Deck);
 	Table.ShuffleDeck();
+	Table.Hands.SetNum(Ruleset.NumPlayers);
 }
 
 void AKeyRummikubGameState::CreateTileActors(const FRummiTileArray& Tiles)
@@ -81,4 +86,12 @@ void AKeyRummikubGameState::DealRandomCardsFromDeckOntoBoard()
 			}
 		}
 	}
+}
+
+void AKeyRummikubGameState::DrawCardFromDeckToHand(int HandIndex)
+{
+	FRummiTile Tile = Table.Deck.PopLastTile();
+	Table.Hands[HandIndex].AddTileToEnd(Tile);
+	ARummiTileActor* TileActor = GetActorFromTileInfo(Tile);
+	HandGrid->PlaceTileAtFirstOpenGridLocation(TileActor);
 }
