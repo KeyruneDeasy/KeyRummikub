@@ -29,13 +29,15 @@ struct KEYRUMMIKUB_API FRummiTile
 
 public:
 	FRummiTile() {}
-	FRummiTile(int InColor, int InNumber) 
-		: Color(InColor), Number(InNumber) {}
+	FRummiTile(int InColor, int InNumber, int InId) 
+		: Color(InColor), Number(InNumber), Id(InId) {}
 
 	UPROPERTY(BlueprintReadOnly)
 	int Color;
 	UPROPERTY(BlueprintReadOnly)
 	int Number;
+	UPROPERTY(BlueprintReadOnly)
+	int Id;
 };
 
 USTRUCT(BlueprintType)
@@ -51,6 +53,11 @@ public:
 		: Tiles(InTiles) {}
 
 	void AddTileToEnd(FRummiTile Tile);
+	int NumTiles() const { return Tiles.Num(); }
+	const FRummiTile& GetTileByIndex(int Index) const { return Tiles[Index]; }
+	void Shuffle();
+	FRummiTile PopLastTile() { return PopTileAtIndex(Tiles.Num() - 1); }
+	FRummiTile PopTileAtIndex(int Index);
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;
@@ -76,7 +83,8 @@ struct KEYRUMMIKUB_API FRummiTable
 public:
 	FRummiTable() {}
 
-	void Initialize(const FRummiRuleset& Ruleset);
+	void InitializeDeck(const FRummiRuleset& Ruleset);
+	void ShuffleDeck();
 
 	UPROPERTY(BlueprintReadOnly)
 	FRummiBoard Board;

@@ -6,6 +6,7 @@
 #include "KeyRummikubGameState.h"
 
 AKeyRummikubGameMode::AKeyRummikubGameMode()
+	: Super()
 {
 	GameStateClass = AKeyRummikubGameState::StaticClass();
 }

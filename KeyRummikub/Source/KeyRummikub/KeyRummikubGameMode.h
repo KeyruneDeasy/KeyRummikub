@@ -8,9 +8,6 @@
 #include "KeyRummikubGameMode.generated.h"
 
 
-/**
- * 
- */
 UCLASS()
 class KEYRUMMIKUB_API AKeyRummikubGameMode : public AGameModeBase
 {
@@ -21,5 +18,6 @@ public:
 
 	virtual void InitGameState();
 
+	UPROPERTY(BlueprintReadOnly)
 	class AKeyRummikubGameState* RummiGameState;
 };
