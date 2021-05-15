@@ -45,12 +45,15 @@ private:
 
 	TArray<ARummiTileActor*> GridSpaces;
 
+	FVector ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector);
 	FVector GetLocalSpaceGridTileLocation(int X, int Y);
 	FVector GetLocalSpaceBaseGridTileLocation();
 	float GetGridWidth();
 	float GetGridHeight();
 	UFUNCTION(BlueprintCallable)
-	void DebugDrawGrid();
+	void DebugDrawGridCoords();
+	UFUNCTION(BlueprintCallable)
+	void DebugDrawGridLines();
 
 	int GetGridIndicesAsArrayIndex(int X, int Y);
 };

@@ -25,13 +25,16 @@ void ARummiGrid::BeginPlay()
 void ARummiGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//DebugDrawGrid();
 }
 
 FVector ARummiGrid::GetWorldSpaceGridTileLocation(int X, int Y)
 {
-	return GetActorTransform().TransformPosition(GetLocalSpaceGridTileLocation(X, Y));
+	return ConvertLocalSpaceToWorldSpace(GetLocalSpaceGridTileLocation(X, Y));
+}
+
+FVector ARummiGrid::ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector)
+{
+	return GetActorTransform().TransformPosition(LocalSpaceVector);
 }
 
 FVector ARummiGrid::GetLocalSpaceGridTileLocation(int X, int Y)
@@ -54,7 +57,7 @@ float ARummiGrid::GetGridHeight()
 	return (float)GridSizeY * GridSpacingY;
 }
 
-void ARummiGrid::DebugDrawGrid()
+void ARummiGrid::DebugDrawGridCoords()
 {
 	for (int X = 0; X < GridSizeX; ++X)
 	{
@@ -62,6 +65,29 @@ void ARummiGrid::DebugDrawGrid()
 		{
 			FString DebugStr = FString::Printf(TEXT("(%d,%d)"), X, Y);
 			DrawDebugString(GetWorld(), GetWorldSpaceGridTileLocation(X, Y), DebugStr, nullptr, FColor::White, 0.0f);
+		}
+	}
+}
+
+void ARummiGrid::DebugDrawGridLines()
+{
+	UWorld* World = GetWorld();
+	for (int X = -1; X < GridSizeX; ++X)
+	{
+		for (int Y = -1; Y < GridSizeY; ++Y)
+		{
+			FVector TileCentre = GetLocalSpaceGridTileLocation(X, Y);
+			FVector TileBottomRight = TileCentre + FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+			if (X != -1)
+			{
+				FVector TileBottomLeft = TileBottomRight - FVector(GridSpacingX, 0.0f, 0.0f);
+				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileBottomLeft), FColor::Black, false, -1.0f, 0, 5.0f);
+			}
+			if (Y != -1)
+			{
+				FVector TileTopRight = TileBottomRight - FVector(0.0f, GridSpacingY, 0.0f);
+				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileTopRight), FColor::Black, false, -1.0f, 0, 5.0f);
+			}
 		}
 	}
 }
