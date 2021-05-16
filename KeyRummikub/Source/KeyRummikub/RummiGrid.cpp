@@ -223,3 +223,41 @@ bool ARummiGrid::FindTileActor(ARummiTileActor* TileActor, int& OutX, int& OutY)
 	
 	return false;
 }
+
+void ARummiGrid::PopulateHandLogicalRepresentation(FRummiTileArray& Hand)
+{
+	for (ARummiTileActor* TileActor : GridSpaces)
+	{
+		if (TileActor != nullptr)
+		{
+			Hand.AddTileToEnd(TileActor->TileInfo);
+		}
+	}
+}
+
+void ARummiGrid::PopulateBoardLogicalRepresentation(FRummiBoard& Board)
+{
+	FRummiTileArray* CurrentArray = nullptr;
+	for (int Y = 0; Y < GridSizeY; ++Y)
+	{
+		for (int X = 0; X < GridSizeX; ++X)
+		{
+			int Index = GetGridIndicesAsArrayIndex(X, Y);
+			ARummiTileActor* TileActor = GridSpaces[Index];
+			if (TileActor == nullptr)
+			{
+				CurrentArray = nullptr;
+			}
+			else
+			{
+				if (CurrentArray == nullptr)
+				{
+					Board.TileSets.AddDefaulted(1);
+					CurrentArray = &Board.TileSets.Last();
+				}
+				CurrentArray->AddTileToEnd(TileActor->TileInfo);
+			}
+		}
+		CurrentArray = nullptr;
+	}
+}

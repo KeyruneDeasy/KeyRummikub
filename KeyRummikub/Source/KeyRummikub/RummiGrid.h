@@ -7,6 +7,8 @@
 #include "RummiGrid.generated.h"
 
 class ARummiTileActor;
+struct FRummiTileArray;
+struct FRummiBoard;
 
 UCLASS(Blueprintable)
 class KEYRUMMIKUB_API ARummiGrid : public AActor
@@ -49,6 +51,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool FindTileActor(ARummiTileActor* TileActor, int& OutX, int& OutY);
+
+	void PopulateHandLogicalRepresentation(FRummiTileArray& Hand);
+	void PopulateBoardLogicalRepresentation(FRummiBoard& Board);
 
 protected:
 	virtual void BeginPlay() override;

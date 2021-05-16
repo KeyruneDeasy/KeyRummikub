@@ -51,6 +51,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ARummiGrid* HandGrid;
 
+	int DisplayedHandIndex = 0;
+
 private:
 	void CreateTileActors(const FRummiTileArray& Tiles);
 	UFUNCTION(BlueprintCallable)
@@ -58,4 +60,6 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void FindTileActorInGrids(ARummiTileActor* Tile, ARummiGrid*& OutGrid, int& OutX, int& OutY);
 	bool TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGrid, int OldX, int OldY, ARummiGrid* NewGrid, int NewX, int NewY);
+
+	void UpdateLogicalRepresentationFromGrids();
 };

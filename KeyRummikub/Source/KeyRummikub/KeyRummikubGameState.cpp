@@ -142,11 +142,28 @@ bool AKeyRummikubGameState::TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGr
 	}
 
 	OldGrid->RemoveTileFromGridLocation(OldX, OldY);
+
+	/*if (OldGrid == HandGrid)
+	{
+		if (NewGrid == HandGrid)
+		{
+			// No logical change.
+			return;
+		}
+		else if(NewGrid == BoardGrid)
+		{
+			Table.Hands[DisplayedHandIndex].RemoveTile(Tile->TileInfo);
+		}
+	}*/
+
+
 	NewGrid->PlaceTileAtGridLocation(Tile, NewX, NewY);
 
-	return true;
+	//const FRummiTile& PlacedTile = Tile->TileInfo;
 
-	// TODO: Update the logical representation
+	UpdateLogicalRepresentationFromGrids();
+
+	return true;
 }
 
 void AKeyRummikubGameState::FindTileActorInGrids(ARummiTileActor* Tile, ARummiGrid*& OutGrid, int& OutX, int& OutY)
@@ -168,4 +185,13 @@ void AKeyRummikubGameState::FindTileActorInGrids(ARummiTileActor* Tile, ARummiGr
 	}
 
 	OutGrid = nullptr;
+}
+
+void AKeyRummikubGameState::UpdateLogicalRepresentationFromGrids()
+{
+	Table.Board.Reset();
+	BoardGrid->PopulateBoardLogicalRepresentation(Table.Board);
+
+	Table.Hands[DisplayedHandIndex].Reset();
+	HandGrid->PopulateHandLogicalRepresentation(Table.Hands[DisplayedHandIndex]);
 }

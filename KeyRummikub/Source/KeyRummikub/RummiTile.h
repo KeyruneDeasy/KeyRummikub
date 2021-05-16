@@ -64,6 +64,8 @@ public:
 	void Shuffle();
 	FRummiTile PopLastTile() { return PopTileAtIndex(Tiles.Num() - 1); }
 	FRummiTile PopTileAtIndex(int Index);
+	void RemoveTile(const FRummiTile& Tile);
+	void Reset() { Tiles.Empty(); }
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;
@@ -76,6 +78,8 @@ struct KEYRUMMIKUB_API FRummiBoard
 
 public:
 	FRummiBoard() {}
+
+	void Reset() { TileSets.Empty(); }
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTileArray> TileSets;

@@ -46,7 +46,18 @@ FRummiTile FRummiTileArray::PopTileAtIndex(int Index)
 	FRummiTile Out = Tiles[Index];
 	Tiles.RemoveAt(Index);
 	return Out;
+}
 
+void FRummiTileArray::RemoveTile(const FRummiTile& Tile)
+{
+	for (int i = 0; i < Tiles.Num(); ++i)
+	{
+		const FRummiTile& ThisTile = Tiles[i];
+		if (ThisTile.Id == Tile.Id)
+		{
+			Tiles.RemoveAt(i);
+		}
+	}
 }
 
 void FRummiTable::InitializeDeck(const FRummiRuleset& Ruleset)
