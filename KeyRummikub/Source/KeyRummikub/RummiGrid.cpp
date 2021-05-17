@@ -74,24 +74,70 @@ void ARummiGrid::DebugDrawGridCoords()
 	}
 }
 
-void ARummiGrid::DebugDrawGridLines()
+void ARummiGrid::DebugDrawGridLines_Internal(const FRummiBoard* Board)
 {
 	UWorld* World = GetWorld();
 	for (int X = -1; X < GridSizeX; ++X)
 	{
 		for (int Y = -1; Y < GridSizeY; ++Y)
 		{
+			FColor ColorVertical = FColor::Black;
+			FColor ColorHorizontal = FColor::Black;
+			if (Board != nullptr)
+			{
+				ARummiTileActor* ThisTile = nullptr;
+				if (X != -1 && Y != -1)
+				{
+					int Index = GetGridIndicesAsArrayIndex(X, Y);
+					ThisTile = GridSpaces[Index];
+				}
+				ARummiTileActor* TileBelow = nullptr;
+				if (X != -1 && Y != GridSizeY - 1)
+				{
+					int Index = GetGridIndicesAsArrayIndex(X, Y + 1);
+					TileBelow = GridSpaces[Index];
+				}
+				ARummiTileActor* TileRight = nullptr;
+				if (X != GridSizeX - 1 && Y != -1)
+				{
+					int Index = GetGridIndicesAsArrayIndex(X + 1, Y);
+					TileRight = GridSpaces[Index];
+				}
+
+				bool bIsThisTileInInvalidSet = ThisTile != nullptr && !Board->IsTileInValidSet(ThisTile->TileInfo);
+
+				if (bIsThisTileInInvalidSet)
+				{
+					ColorVertical = FColor::Red;
+					ColorHorizontal = FColor::Red;
+				}
+				else
+				{
+					bool bIsThisTileInValidSet = ThisTile != nullptr && !bIsThisTileInInvalidSet;
+
+					if (ThisTile != nullptr || TileBelow != nullptr)
+					{
+						bool bIsTileBelowInInvalidSet = TileBelow != nullptr && !Board->IsTileInValidSet(TileBelow->TileInfo);
+						ColorHorizontal = bIsThisTileInInvalidSet || bIsTileBelowInInvalidSet ? FColor::Red : FColor::Green; 
+					}
+					if (ThisTile != nullptr || TileRight != nullptr)
+					{
+						bool bIsTileRightInInvalidSet = TileRight != nullptr && !Board->IsTileInValidSet(TileRight->TileInfo);
+						ColorVertical = bIsThisTileInInvalidSet || bIsTileRightInInvalidSet ? FColor::Red : FColor::Green;
+					}
+				}
+			}
 			FVector TileCentre = GetLocalSpaceGridTileLocation(X, Y);
 			FVector TileBottomRight = TileCentre + FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
 			if (X != -1)
 			{
 				FVector TileBottomLeft = TileBottomRight - FVector(GridSpacingX, 0.0f, 0.0f);
-				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileBottomLeft), FColor::Black, false, -1.0f, 0, 5.0f);
+				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileBottomLeft), ColorHorizontal, false, -1.0f, 0, 5.0f);
 			}
 			if (Y != -1)
 			{
 				FVector TileTopRight = TileBottomRight - FVector(0.0f, GridSpacingY, 0.0f);
-				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileTopRight), FColor::Black, false, -1.0f, 0, 5.0f);
+				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileTopRight), ColorVertical, false, -1.0f, 0, 5.0f);
 			}
 		}
 	}
@@ -264,6 +310,7 @@ void ARummiGrid::PopulateBoardLogicalRepresentation(FRummiBoard& Board)
 		}
 		CurrentArray = nullptr;
 	}
+	Board.EvaluateIsValidBoard();
 }
 
 void ARummiGrid::PopulateFromRummiBoard(const FRummiBoard& Board, const TArray<ARummiTileActor*>& TileActors)

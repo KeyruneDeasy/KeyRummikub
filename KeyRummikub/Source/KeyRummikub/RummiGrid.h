@@ -86,7 +86,10 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void DebugDrawGridCoords();
 	UFUNCTION(BlueprintCallable)
-	void DebugDrawGridLines();
+	void DebugDrawGridLines() { DebugDrawGridLines_Internal(nullptr); }
+	UFUNCTION(BlueprintCallable)
+	void DebugDrawGridLinesWithColorCoding(const FRummiBoard& Board) { DebugDrawGridLines_Internal(&Board); }
+	void DebugDrawGridLines_Internal(const FRummiBoard* Board);
 
 	int GetGridIndicesAsArrayIndex(int X, int Y);
 	ARummiTileActor* RemoveTileFromIndex(int Index);

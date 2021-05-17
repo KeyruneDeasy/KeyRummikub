@@ -60,6 +60,74 @@ void FRummiTileArray::RemoveTile(const FRummiTile& Tile)
 	}
 }
 
+void FRummiTileBoardSet::EvaluateIsValidSet()
+{
+	if (Tiles.Num() < 3 || Tiles.Num() > 13)
+	{
+		bIsValidSet = false;
+		return;
+	}
+
+	bIsValidSet = true;
+	for (int i = 1; i < Tiles.Num() && bIsValidSet; ++i)
+	{
+		const FRummiTile& PrevTile = Tiles[i - 1];
+		const FRummiTile& ThisTile = Tiles[i];
+
+		if (ThisTile.Color != PrevTile.Color || ThisTile.Number != PrevTile.Number + 1)
+		{
+			bIsValidSet = false;
+			break;
+		}
+	}
+
+	if (!bIsValidSet)
+	{
+		int Number = Tiles[0].Number;
+		TArray<bool, TInlineAllocator<32>> Colors;
+		Colors.AddZeroed(32);
+
+		bIsValidSet = true;
+		for (int i = 0; i < Tiles.Num(); ++i)
+		{
+			if (Tiles[i].Number != Number || Colors[Tiles[i].Color])
+			{
+				bIsValidSet = false;
+				break;
+			}
+			Colors[i] = true;
+		}
+	}
+}
+
+void FRummiBoard::EvaluateIsValidBoard()
+{
+	bIsValidBoard = true;
+	for (FRummiTileBoardSet& TileSet : TileSets)
+	{
+		TileSet.EvaluateIsValidSet();
+		if (!TileSet.bIsValidSet)
+		{
+			bIsValidBoard = false;
+		}
+	}
+}
+
+bool FRummiBoard::IsTileInValidSet(const FRummiTile& Tile) const
+{
+	for (const FRummiTileBoardSet& TileSet : TileSets)
+	{
+		for (const FRummiTile& ThisTile : TileSet.Tiles)
+		{
+			if (ThisTile.Id == Tile.Id)
+			{
+				return TileSet.bIsValidSet;
+			}
+		}
+	}
+	return false;
+}
+
 void FRummiTable::InitializeDeck(const FRummiRuleset& Ruleset)
 {
 	FRummiTileArray::CreateDeck(Deck, Ruleset.NumColors, Ruleset.NumNumbers, Ruleset.NumRepetitions, Ruleset.LowestNumber);

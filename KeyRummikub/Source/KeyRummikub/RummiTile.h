@@ -72,6 +72,17 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct KEYRUMMIKUB_API FRummiTileBoardSet : public FRummiTileArray
+{
+	GENERATED_BODY()
+
+public:
+	void EvaluateIsValidSet();
+
+	bool bIsValidSet;
+};
+
+USTRUCT(BlueprintType)
 struct KEYRUMMIKUB_API FRummiBoard
 {
 	GENERATED_BODY()
@@ -80,9 +91,14 @@ public:
 	FRummiBoard() {}
 
 	void Reset() { TileSets.Empty(); }
+	void EvaluateIsValidBoard();
+	bool IsTileInValidSet(const FRummiTile& Tile) const;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FRummiTileArray> TileSets;
+	TArray<FRummiTileBoardSet> TileSets;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsValidBoard;
 };
 
 USTRUCT(BlueprintType)
