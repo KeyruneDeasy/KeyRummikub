@@ -117,16 +117,20 @@ void ARummiGrid::PlaceTileAtGridLocation(ARummiTileActor* Tile, int X, int Y)
 	Tile->OnPlacedIntoGrid(GetWorldSpaceGridTileLocation(X, Y));
 }
 
-
 ARummiTileActor* ARummiGrid::RemoveTileFromGridLocation(int X, int Y)
 {
 	int Index = GetGridIndicesAsArrayIndex(X, Y);
+	return RemoveTileFromIndex(Index);
+}
+
+ARummiTileActor* ARummiGrid::RemoveTileFromIndex(int Index)
+{
 	ARummiTileActor* RemovedTile = GridSpaces[Index];
 	GridSpaces[Index] = nullptr;
 	if (RemovedTile == nullptr)
 	{
-		FString ErrorStr = FString::Printf(TEXT("Tried to remove a tile from an unoccupied grid square (%d,%d)."), X, Y);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, ErrorStr);
+		//FString ErrorStr = FString::Printf(TEXT("Tried to remove a tile from an unoccupied grid square (%d,%d)."), X, Y);
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, ErrorStr);
 		return nullptr;
 	}
 	RemovedTile->OnRemovedFromGrid();
@@ -259,5 +263,56 @@ void ARummiGrid::PopulateBoardLogicalRepresentation(FRummiBoard& Board)
 			}
 		}
 		CurrentArray = nullptr;
+	}
+}
+
+void ARummiGrid::PopulateFromRummiBoard(const FRummiBoard& Board, const TArray<ARummiTileActor*>& TileActors)
+{
+	Clear();
+
+	int NextGridX = 0;
+	int NextGridY = 0;
+
+	for (const FRummiTileArray& TileSet : Board.TileSets)
+	{
+		int TilesRemainingInRow = GridSizeX - NextGridX;
+		if (TileSet.NumTiles() > TilesRemainingInRow)
+		{
+			NextGridX = 0;
+			++NextGridY;
+			if (NextGridY >= GridSizeY)
+			{
+				return;
+			}
+		}
+		for (const FRummiTile& Tile : TileSet.Tiles)
+		{
+			ARummiTileActor* TileActor = TileActors[Tile.Id];
+			PlaceTileAtGridLocation(TileActor, NextGridX, NextGridY);
+			++NextGridX;
+		}
+		++NextGridX;
+	}
+}
+
+void ARummiGrid::PopulateFromRummiHand(const FRummiTileArray& Hand, const TArray<ARummiTileActor*>& TileActors)
+{
+	Clear();
+
+	for (int i = 0; i < Hand.NumTiles(); ++i)
+	{
+		ARummiTileActor* TileActor = TileActors[Hand.Tiles[i].Id];
+		PlaceTileAtFirstOpenGridLocation(TileActor);
+	}
+}
+
+void ARummiGrid::Clear()
+{
+	for (int i = 0; i < GridSpaces.Num(); ++i)
+	{
+		if (GridSpaces[i] != nullptr)
+		{
+			RemoveTileFromIndex(i);
+		}
 	}
 }

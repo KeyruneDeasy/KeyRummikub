@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RummiTile.h"
 #include "RummiGrid.generated.h"
 
 class ARummiTileActor;
@@ -55,6 +56,10 @@ public:
 	void PopulateHandLogicalRepresentation(FRummiTileArray& Hand);
 	void PopulateBoardLogicalRepresentation(FRummiBoard& Board);
 
+	void PopulateFromRummiBoard(const FRummiBoard& Board, const TArray<ARummiTileActor*>& TileActors);
+	void PopulateFromRummiHand(const FRummiTileArray& Hand, const TArray<ARummiTileActor*>& TileActors);
+	void Clear();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -84,4 +89,5 @@ private:
 	void DebugDrawGridLines();
 
 	int GetGridIndicesAsArrayIndex(int X, int Y);
+	ARummiTileActor* RemoveTileFromIndex(int Index);
 };

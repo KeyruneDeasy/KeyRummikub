@@ -195,3 +195,9 @@ void AKeyRummikubGameState::UpdateLogicalRepresentationFromGrids()
 	Table.Hands[DisplayedHandIndex].Reset();
 	HandGrid->PopulateHandLogicalRepresentation(Table.Hands[DisplayedHandIndex]);
 }
+
+void AKeyRummikubGameState::UpdateGridsFromLogicalRepresentation()
+{
+	BoardGrid->PopulateFromRummiBoard(Table.Board, TileActors);
+	HandGrid->PopulateFromRummiHand(Table.Hands[DisplayedHandIndex], TileActors);
+}

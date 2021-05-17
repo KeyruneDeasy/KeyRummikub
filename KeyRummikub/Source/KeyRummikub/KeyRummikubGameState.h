@@ -62,4 +62,6 @@ private:
 	bool TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGrid, int OldX, int OldY, ARummiGrid* NewGrid, int NewX, int NewY);
 
 	void UpdateLogicalRepresentationFromGrids();
+	UFUNCTION(BlueprintCallable)
+	void UpdateGridsFromLogicalRepresentation();
 };
