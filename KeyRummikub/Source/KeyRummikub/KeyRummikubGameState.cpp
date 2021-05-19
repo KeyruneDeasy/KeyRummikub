@@ -3,6 +3,7 @@
 
 #include "KeyRummikubGameState.h"
 #include "EngineUtils.h"
+#include "RummiAi.h"
 
 AKeyRummikubGameState::AKeyRummikubGameState()
 	: Super()
@@ -12,6 +13,7 @@ AKeyRummikubGameState::AKeyRummikubGameState()
 
 void AKeyRummikubGameState::BeginPlay()
 {
+	Super::BeginPlay();
 	for (TActorIterator<ARummiGrid> It(GetWorld()); It; ++It)
 	{
 		ARummiGrid* Grid = *It;
@@ -26,12 +28,33 @@ void AKeyRummikubGameState::BeginPlay()
 	}
 }
 
+void AKeyRummikubGameState::Tick(float DeltaTime)
+{
+	URummiAi* CurrentAi = PlayerInfos[CurrentTurnPlayerIndex].Ai;
+	if (CurrentAi != nullptr)
+	{
+		bool bTurnReadyToEnd = CurrentAi->Update(DeltaTime);
+
+		if (bTurnReadyToEnd)
+		{
+			EndTurn();
+		}
+	}
+}
+
 void AKeyRummikubGameState::InitializeTable()
 {
 	Table.InitializeDeck(Ruleset);
 	CreateTileActors(Table.Deck);
 	Table.ShuffleDeck();
+	Table.Hands.Empty();
 	Table.Hands.SetNum(Ruleset.NumPlayers);
+	PlayerInfos.Empty();
+	PlayerInfos.SetNum(Ruleset.NumPlayers);
+	for (int i = 1; i < PlayerInfos.Num(); ++i)
+	{
+		PlayerInfos[i].Ai = NewObject<URummiAi>();
+	}
 }
 
 void AKeyRummikubGameState::CreateTileActors(const FRummiTileArray& Tiles)
@@ -92,8 +115,11 @@ void AKeyRummikubGameState::DrawCardFromDeckToHand(int HandIndex)
 {
 	FRummiTile Tile = Table.Deck.PopLastTile();
 	Table.Hands[HandIndex].AddTileToEnd(Tile);
-	ARummiTileActor* TileActor = GetActorFromTileInfo(Tile);
-	HandGrid->PlaceTileAtFirstOpenGridLocation(TileActor);
+	if (HandIndex == DisplayedHandIndex)
+	{
+		ARummiTileActor* TileActor = GetActorFromTileInfo(Tile);
+		HandGrid->PlaceTileAtFirstOpenGridLocation(TileActor);
+	}
 }
 
 bool AKeyRummikubGameState::TryMoveTileToWorldLocation(ARummiTileActor* Tile, const FVector& WorldLocation)
@@ -200,4 +226,16 @@ void AKeyRummikubGameState::UpdateGridsFromLogicalRepresentation()
 {
 	BoardGrid->PopulateFromRummiBoard(Table.Board, TileActors);
 	HandGrid->PopulateFromRummiHand(Table.Hands[DisplayedHandIndex], TileActors);
+}
+
+void AKeyRummikubGameState::EndPlayerTurn()
+{
+	EndTurn();
+}
+
+void AKeyRummikubGameState::EndTurn()
+{
+	DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
+
+	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
 }

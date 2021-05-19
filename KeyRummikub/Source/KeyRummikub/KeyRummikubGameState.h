@@ -9,6 +9,18 @@
 #include "RummiGrid.h"
 #include "KeyRummikubGameState.generated.h"
 
+class URummiAi;
+
+USTRUCT()
+struct KEYRUMMIKUB_API FRummiPlayerInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(Transient)
+	URummiAi* Ai = nullptr;
+};
+
 UCLASS()
 class KEYRUMMIKUB_API AKeyRummikubGameState : public AGameStateBase
 {
@@ -18,6 +30,7 @@ public:
 	AKeyRummikubGameState();
 
 	virtual void BeginPlay();
+	virtual void Tick(float DeltaTime) override;
 
 	void InitializeTable();
 	UFUNCTION(BlueprintPure)
@@ -31,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool TryMoveTileToWorldLocation(ARummiTileActor* Tile, const FVector& WorldLocation);
+
+	UFUNCTION(BlueprintPure)
+	int GetNumRummiPlayers() { return PlayerInfos.Num(); }
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
@@ -53,6 +69,11 @@ public:
 
 	int DisplayedHandIndex = 0;
 
+	int CurrentTurnPlayerIndex = 0;
+
+	UPROPERTY(Transient)
+	TArray<FRummiPlayerInfo> PlayerInfos;
+
 private:
 	void CreateTileActors(const FRummiTileArray& Tiles);
 	UFUNCTION(BlueprintCallable)
@@ -64,4 +85,9 @@ private:
 	void UpdateLogicalRepresentationFromGrids();
 	UFUNCTION(BlueprintCallable)
 	void UpdateGridsFromLogicalRepresentation();
+
+	UFUNCTION(BlueprintCallable)
+	void EndPlayerTurn();
+	void EndTurn();
+	void RunAiTurns();
 };
