@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "RummiTile.h"
 #include "RummiAi.generated.h"
+
+class AKeyRummikubGameState;
 
 UCLASS()
 class KEYRUMMIKUB_API URummiAi : public UObject
@@ -13,5 +16,9 @@ class KEYRUMMIKUB_API URummiAi : public UObject
 	
 public:
 	// Returns true if it is ready to end turn.
-	virtual bool Update(float DeltaTime);
+	virtual bool Update(float DeltaTime, AKeyRummikubGameState* GameState);
+
+	void DetermineTargetBoardState(AKeyRummikubGameState* GameState);
+
+	FRummiBoard TargetBoardState;
 };

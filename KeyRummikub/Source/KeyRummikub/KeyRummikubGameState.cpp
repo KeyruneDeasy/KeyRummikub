@@ -33,7 +33,7 @@ void AKeyRummikubGameState::Tick(float DeltaTime)
 	URummiAi* CurrentAi = PlayerInfos[CurrentTurnPlayerIndex].Ai;
 	if (CurrentAi != nullptr)
 	{
-		bool bTurnReadyToEnd = CurrentAi->Update(DeltaTime);
+		bool bTurnReadyToEnd = CurrentAi->Update(DeltaTime, this);
 
 		if (bTurnReadyToEnd)
 		{

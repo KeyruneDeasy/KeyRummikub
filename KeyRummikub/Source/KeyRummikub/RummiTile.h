@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "RummiTile.generated.h"
 
+#define HARD_MAX_COLORS 32
 
 USTRUCT(BlueprintType)
 struct KEYRUMMIKUB_API FRummiRuleset
@@ -66,6 +67,9 @@ public:
 	FRummiTile PopTileAtIndex(int Index);
 	void RemoveTile(const FRummiTile& Tile);
 	void Reset() { Tiles.Empty(); }
+	void SortByAscendingNumber();
+	void FindValidSubsets(TArray<FRummiTileArray>& OutSubsets);
+	bool EvaluateIsValidSet();
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;
@@ -77,8 +81,6 @@ struct KEYRUMMIKUB_API FRummiTileBoardSet : public FRummiTileArray
 	GENERATED_BODY()
 
 public:
-	void EvaluateIsValidSet();
-
 	bool bIsValidSet;
 };
 

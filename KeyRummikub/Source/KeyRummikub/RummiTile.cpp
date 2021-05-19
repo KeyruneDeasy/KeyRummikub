@@ -60,44 +60,93 @@ void FRummiTileArray::RemoveTile(const FRummiTile& Tile)
 	}
 }
 
-void FRummiTileBoardSet::EvaluateIsValidSet()
+void FRummiTileArray::SortByAscendingNumber()
+{
+	Tiles.Sort([](const FRummiTile& A, const FRummiTile& B)
+		{
+			return A.Number < B.Number || (A.Number == B.Number && A.Color < B.Color);
+		});
+}
+
+void FRummiTileArray::FindValidSubsets(TArray<FRummiTileArray>& OutSubsets)
+{
+	FRummiTileArray Temp = *this;
+	Temp.SortByAscendingNumber();
+	int BaseIndex = 0;
+	int NumDistinctColors = 1;
+	for (int i = 1; i < Temp.Tiles.Num(); ++i)
+	{
+		if (Temp.Tiles[i].Number == Temp.Tiles[i - 1].Number)
+		{
+			if (Temp.Tiles[i].Color != Temp.Tiles[i - 1].Color)
+			{
+				++NumDistinctColors;
+			}
+		}
+		else
+		{
+			int EndIndex = i - 1;
+			// BaseIndex to EndIndex, inclusive, is a set of tiles with the same number.
+			int NumTiles = i - BaseIndex;
+			if (NumDistinctColors >= 3)
+			{
+				OutSubsets.AddDefaulted(1);
+				FRummiTileArray& NewSubset = OutSubsets.Last();
+				// Take the first occurrence of each color and make a set out of them.
+				for (int j = EndIndex; j >= BaseIndex; --j)
+				{
+					if (j == BaseIndex || Temp.Tiles[j].Color != Temp.Tiles[j - 1].Color)
+					{
+						NewSubset.AddTileToEnd(Temp.Tiles[j]);
+						Temp.Tiles.RemoveAt(j);
+					}
+				}
+				i = BaseIndex; // Recheck the remaining tiles to see if there's another set can be made from them.
+			}
+			BaseIndex = i;
+			NumDistinctColors = 1;
+		}
+	}
+}
+
+bool FRummiTileArray::EvaluateIsValidSet()
 {
 	if (Tiles.Num() < 3 || Tiles.Num() > 13)
 	{
-		bIsValidSet = false;
-		return;
+		return false;
 	}
 
-	bIsValidSet = true;
-	for (int i = 1; i < Tiles.Num() && bIsValidSet; ++i)
+	bool bIsValidSetLocal = true;
+	for (int i = 1; i < Tiles.Num() && bIsValidSetLocal; ++i)
 	{
 		const FRummiTile& PrevTile = Tiles[i - 1];
 		const FRummiTile& ThisTile = Tiles[i];
 
 		if (ThisTile.Color != PrevTile.Color || ThisTile.Number != PrevTile.Number + 1)
 		{
-			bIsValidSet = false;
+			bIsValidSetLocal = false;
 			break;
 		}
 	}
 
-	if (!bIsValidSet)
+	if (!bIsValidSetLocal)
 	{
 		int Number = Tiles[0].Number;
 		TArray<bool, TInlineAllocator<32>> Colors;
 		Colors.AddZeroed(32);
 
-		bIsValidSet = true;
+		bIsValidSetLocal = true;
 		for (int i = 0; i < Tiles.Num(); ++i)
 		{
 			if (Tiles[i].Number != Number || Colors[Tiles[i].Color])
 			{
-				bIsValidSet = false;
+				bIsValidSetLocal = false;
 				break;
 			}
 			Colors[Tiles[i].Color] = true;
 		}
 	}
+	return bIsValidSetLocal;
 }
 
 void FRummiBoard::EvaluateIsValidBoard()
@@ -105,7 +154,7 @@ void FRummiBoard::EvaluateIsValidBoard()
 	bIsValidBoard = true;
 	for (FRummiTileBoardSet& TileSet : TileSets)
 	{
-		TileSet.EvaluateIsValidSet();
+		TileSet.bIsValidSet = TileSet.EvaluateIsValidSet();
 		if (!TileSet.bIsValidSet)
 		{
 			bIsValidBoard = false;
