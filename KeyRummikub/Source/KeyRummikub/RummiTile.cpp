@@ -95,7 +95,7 @@ void FRummiTileBoardSet::EvaluateIsValidSet()
 				bIsValidSet = false;
 				break;
 			}
-			Colors[i] = true;
+			Colors[Tiles[i].Color] = true;
 		}
 	}
 }
