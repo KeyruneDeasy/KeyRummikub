@@ -47,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	int GetNumRummiPlayers() { return PlayerInfos.Num(); }
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateGridsFromLogicalRepresentation();
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
@@ -83,8 +86,6 @@ private:
 	bool TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGrid, int OldX, int OldY, ARummiGrid* NewGrid, int NewX, int NewY);
 
 	void UpdateLogicalRepresentationFromGrids();
-	UFUNCTION(BlueprintCallable)
-	void UpdateGridsFromLogicalRepresentation();
 
 	UFUNCTION(BlueprintCallable)
 	void EndPlayerTurn();

@@ -3,6 +3,7 @@
 
 #include "RummiTile.h"
 #include "KeyUtil.h"
+#include "Algo/Reverse.h"
 
 void FRummiTileArray::CreateDeck(FRummiTileArray& InDeck, int NumColors, int NumNumbers, int NumRepetitions, int LowestNumber)
 {
@@ -68,6 +69,14 @@ void FRummiTileArray::SortByAscendingNumber()
 		});
 }
 
+void FRummiTileArray::SortByColor()
+{
+	Tiles.Sort([](const FRummiTile& A, const FRummiTile& B)
+		{
+			return A.Color < B.Color || (A.Color == B.Color && A.Number < B.Number);
+		});
+}
+
 void FRummiTileArray::FindValidSubsets(TArray<FRummiTileArray>& OutSubsets)
 {
 	FRummiTileArray Temp = *this;
@@ -87,7 +96,6 @@ void FRummiTileArray::FindValidSubsets(TArray<FRummiTileArray>& OutSubsets)
 		{
 			int EndIndex = i - 1;
 			// BaseIndex to EndIndex, inclusive, is a set of tiles with the same number.
-			int NumTiles = i - BaseIndex;
 			if (NumDistinctColors >= 3)
 			{
 				OutSubsets.AddDefaulted(1);
@@ -101,10 +109,49 @@ void FRummiTileArray::FindValidSubsets(TArray<FRummiTileArray>& OutSubsets)
 						Temp.Tiles.RemoveAt(j);
 					}
 				}
-				i = BaseIndex; // Recheck the remaining tiles to see if there's another set can be made from them.
+				i = BaseIndex; // Recheck the remaining tiles to see if there's another set that can be made from them.
 			}
 			BaseIndex = i;
 			NumDistinctColors = 1;
+		}
+	}
+
+	Temp.SortByColor();
+	BaseIndex = 0;
+	int NumDistinctTiles = 1;
+	for (int i = 1; i < Temp.Tiles.Num(); ++i)
+	{
+		bool bMatchingColor = Temp.Tiles[i].Color == Temp.Tiles[i - 1].Color;
+		if (bMatchingColor && Temp.Tiles[i].Number == Temp.Tiles[i - 1].Number + 1)
+		{
+			++NumDistinctTiles;
+		}
+		else if (bMatchingColor && Temp.Tiles[i].Number == Temp.Tiles[i - 1].Number)
+		{
+			// Not a distinct tile, but keep counting.
+		}
+		else
+		{
+			int EndIndex = i - 1;
+			// BaseIndex to EndIndex, inclusive, is a set of tiles of matching colour and ascending number.
+			if (NumDistinctTiles >= 3)
+			{
+				OutSubsets.AddDefaulted(1);
+				FRummiTileArray& NewSubset = OutSubsets.Last();
+				// Take the first occurrence of each number and make a set out of them.
+				for (int j = EndIndex; j >= BaseIndex; --j)
+				{
+					if (j == BaseIndex || Temp.Tiles[j].Number != Temp.Tiles[j - 1].Number)
+					{
+						NewSubset.AddTileToEnd(Temp.Tiles[j]);
+						Temp.Tiles.RemoveAt(j);
+					}
+				}
+				Algo::Reverse(NewSubset.Tiles);
+				i = BaseIndex; // Recheck the remaining tiles to see if there's another set that can be made from them.
+			}
+			BaseIndex = i;
+			NumDistinctTiles = 1;
 		}
 	}
 }
@@ -149,6 +196,11 @@ bool FRummiTileArray::EvaluateIsValidSet()
 	return bIsValidSetLocal;
 }
 
+FRummiTileBoardSet::FRummiTileBoardSet(const FRummiTileArray& InSet)
+{
+	this->Tiles = InSet.Tiles;
+}
+
 void FRummiBoard::EvaluateIsValidBoard()
 {
 	bIsValidBoard = true;
@@ -175,6 +227,13 @@ bool FRummiBoard::IsTileInValidSet(const FRummiTile& Tile) const
 		}
 	}
 	return false;
+}
+
+void FRummiBoard::AddTileSet(const FRummiTileArray& NewTileSet)
+{
+	TileSets.Add(FRummiTileBoardSet(NewTileSet));
+	bool bIsValidSet = TileSets.Last().EvaluateIsValidSet();
+	bIsValidBoard &= bIsValidSet;
 }
 
 void FRummiTable::InitializeDeck(const FRummiRuleset& Ruleset)

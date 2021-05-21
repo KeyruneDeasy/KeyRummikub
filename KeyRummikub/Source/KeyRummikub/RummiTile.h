@@ -68,6 +68,7 @@ public:
 	void RemoveTile(const FRummiTile& Tile);
 	void Reset() { Tiles.Empty(); }
 	void SortByAscendingNumber();
+	void SortByColor();
 	void FindValidSubsets(TArray<FRummiTileArray>& OutSubsets);
 	bool EvaluateIsValidSet();
 
@@ -81,6 +82,9 @@ struct KEYRUMMIKUB_API FRummiTileBoardSet : public FRummiTileArray
 	GENERATED_BODY()
 
 public:
+	FRummiTileBoardSet() {}
+	FRummiTileBoardSet(const FRummiTileArray& InSet);
+
 	bool bIsValidSet;
 };
 
@@ -95,6 +99,7 @@ public:
 	void Reset() { TileSets.Empty(); }
 	void EvaluateIsValidBoard();
 	bool IsTileInValidSet(const FRummiTile& Tile) const;
+	void AddTileSet(const FRummiTileArray& NewTileSet);
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTileBoardSet> TileSets;

@@ -19,6 +19,8 @@ public:
 	virtual bool Update(float DeltaTime, AKeyRummikubGameState* GameState);
 
 	void DetermineTargetBoardState(AKeyRummikubGameState* GameState);
+	void SnapToTargetBoardState(AKeyRummikubGameState* GameState);
 
 	FRummiBoard TargetBoardState;
+	FRummiTileArray TilesToPlayFromHand;
 };
