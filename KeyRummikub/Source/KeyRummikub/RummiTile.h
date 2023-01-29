@@ -45,6 +45,11 @@ public:
 	int Number;
 	UPROPERTY(BlueprintReadOnly)
 	int Id;
+
+	FString GetAsLongString() const;
+	FString GetAsShortString() const;
+
+	bool operator==(const FRummiTile& RHS) const;
 };
 
 USTRUCT(BlueprintType)

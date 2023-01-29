@@ -5,6 +5,24 @@
 #include "KeyUtil.h"
 #include "Algo/Reverse.h"
 
+FString FRummiTile::GetAsLongString() const
+{
+	return FString::Printf(TEXT("Color: %d, Number: %d, Id: %d"), Color, Number, Id);
+}
+
+FString FRummiTile::GetAsShortString() const
+{
+	return FString::Printf(TEXT("%d,%d,%d"), Color, Number, Id);
+}
+
+bool FRummiTile::operator==(const FRummiTile& RHS) const
+{
+	return
+		this->Color == RHS.Color &&
+		this->Number == RHS.Number &&
+		this->Id == RHS.Id;
+}
+
 void FRummiTileArray::CreateDeck(FRummiTileArray& InDeck, int NumColors, int NumNumbers, int NumRepetitions, int LowestNumber)
 {
 	int TileId = 0;
