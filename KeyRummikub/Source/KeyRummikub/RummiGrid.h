@@ -60,6 +60,9 @@ public:
 	void PopulateFromRummiHand(const FRummiTileArray& Hand, const TArray<ARummiTileActor*>& TileActors);
 	void Clear();
 
+	UFUNCTION(BlueprintPure)
+	void GetWorldBounds(FVector& OutMin, FVector& OutMax);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -80,6 +83,12 @@ private:
 	FVector ConvertWorldSpaceToLocalSpace(const FVector& LocalSpaceVector) const;
 	FVector GetLocalSpaceGridTileLocation(int X, int Y) const;
 	FVector GetLocalSpaceBaseGridTileLocation() const;
+
+	FVector GetTileTopLeftFromTileCentre(const FVector& TileCentre) const;
+	FVector GetTileTopRightFromTileCentre(const FVector& TileCentre) const;
+	FVector GetTileBottomLeftFromTileCentre(const FVector& TileCentre) const;
+	FVector GetTileBottomRightFromTileCentre(const FVector& TileCentre) const;
+
 	FVector GetLocalSpaceTopLeftCorner() const;
 	float GetGridWidth();
 	float GetGridHeight();

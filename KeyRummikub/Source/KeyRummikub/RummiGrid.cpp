@@ -52,6 +52,26 @@ FVector ARummiGrid::GetLocalSpaceBaseGridTileLocation() const
 	return FVector((float)(GridSizeX - 1) * GridSpacingX * (-0.5f), (float)(GridSizeY - 1) * GridSpacingY * (-0.5f), 0.0f);
 }
 
+FVector ARummiGrid::GetTileTopLeftFromTileCentre(const FVector& TileCentre) const
+{
+	return TileCentre + FVector(-GridSpacingX / 2.0f, -GridSpacingY / 2.0f, 0.0f);
+}
+
+FVector ARummiGrid::GetTileTopRightFromTileCentre(const FVector& TileCentre) const
+{
+	return TileCentre + FVector(GridSpacingX / 2.0f, -GridSpacingY / 2.0f, 0.0f);
+}
+
+FVector ARummiGrid::GetTileBottomLeftFromTileCentre(const FVector& TileCentre) const
+{
+	return TileCentre + FVector(-GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+}
+
+FVector ARummiGrid::GetTileBottomRightFromTileCentre(const FVector& TileCentre) const
+{
+	return TileCentre + FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+}
+
 float ARummiGrid::GetGridWidth()
 {
 	return (float)GridSizeX * GridSpacingX;
@@ -128,15 +148,15 @@ void ARummiGrid::DebugDrawGridLines_Internal(const FRummiBoard* Board)
 				}
 			}
 			FVector TileCentre = GetLocalSpaceGridTileLocation(X, Y);
-			FVector TileBottomRight = TileCentre + FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+			FVector TileBottomRight = GetTileBottomRightFromTileCentre(TileCentre);
 			if (X != -1)
 			{
-				FVector TileBottomLeft = TileBottomRight - FVector(GridSpacingX, 0.0f, 0.0f);
+				FVector TileBottomLeft = GetTileBottomLeftFromTileCentre(TileCentre);
 				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileBottomLeft), ColorHorizontal, false, -1.0f, 0, 5.0f);
 			}
 			if (Y != -1)
 			{
-				FVector TileTopRight = TileBottomRight - FVector(0.0f, GridSpacingY, 0.0f);
+				FVector TileTopRight = GetTileTopRightFromTileCentre(TileCentre);
 				DrawDebugLine(World, ConvertLocalSpaceToWorldSpace(TileBottomRight), ConvertLocalSpaceToWorldSpace(TileTopRight), ColorVertical, false, -1.0f, 0, 5.0f);
 			}
 		}
@@ -221,7 +241,7 @@ ARummiTileActor* ARummiGrid::GetTileActorAtWorldLocation(const FVector& WorldLoc
 
 FVector ARummiGrid::GetLocalSpaceTopLeftCorner() const
 {
-	return GetLocalSpaceBaseGridTileLocation() - FVector(GridSpacingX / 2.0f, GridSpacingY / 2.0f, 0.0f);
+	return GetTileTopLeftFromTileCentre(GetLocalSpaceBaseGridTileLocation());
 }
 
 bool ARummiGrid::IsValidGridIndex(int X, int Y)
@@ -362,4 +382,12 @@ void ARummiGrid::Clear()
 			RemoveTileFromIndex(i);
 		}
 	}
+}
+
+void ARummiGrid::GetWorldBounds(FVector& OutMin, FVector& OutMax)
+{
+	FVector Size = FVector((float)GridSizeX * GridSpacingX, (float)GridSizeY * GridSpacingY, 0.0f);
+	FVector HalfSize = Size / 2.0f;
+	OutMin = ConvertLocalSpaceToWorldSpace(-HalfSize);
+	OutMax = ConvertLocalSpaceToWorldSpace(HalfSize);
 }
