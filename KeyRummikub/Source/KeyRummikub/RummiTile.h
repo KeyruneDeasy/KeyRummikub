@@ -7,6 +7,13 @@
 
 #define HARD_MAX_COLORS 32
 
+UENUM()
+enum class ETileArrayType : uint8
+{
+	AscendingNumbers,
+	MatchingNumbers,
+};
+
 USTRUCT(BlueprintType)
 struct KEYRUMMIKUB_API FRummiRuleset
 {
@@ -64,6 +71,7 @@ public:
 	FRummiTileArray(const TArray<FRummiTile>& InTiles)
 		: Tiles(InTiles) {}
 
+	void AddTileToStart(FRummiTile Tile);
 	void AddTileToEnd(FRummiTile Tile);
 	int NumTiles() const { return Tiles.Num(); }
 	const FRummiTile& GetTileByIndex(int Index) const { return Tiles[Index]; }
@@ -76,6 +84,9 @@ public:
 	void SortByColor();
 	void FindValidSubsets(TArray<FRummiTileArray>& OutSubsets);
 	bool EvaluateIsValidSet();
+	ETileArrayType GetTileArrayType();
+	FRummiTile& GetFirstTile();
+	FRummiTile& GetLastTile();
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;
@@ -105,6 +116,7 @@ public:
 	void EvaluateIsValidBoard();
 	bool IsTileInValidSet(const FRummiTile& Tile) const;
 	void AddTileSet(const FRummiTileArray& NewTileSet);
+	void RemoveTileSet(int Index);
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTileBoardSet> TileSets;

@@ -39,6 +39,11 @@ void FRummiTileArray::CreateDeck(FRummiTileArray& InDeck, int NumColors, int Num
 	}
 }
 
+void FRummiTileArray::AddTileToStart(FRummiTile Tile)
+{
+	Tiles.Insert(Tile, 0);
+}
+
 void FRummiTileArray::AddTileToEnd(FRummiTile Tile)
 {
 	Tiles.Add(Tile);
@@ -214,6 +219,37 @@ bool FRummiTileArray::EvaluateIsValidSet()
 	return bIsValidSetLocal;
 }
 
+ETileArrayType FRummiTileArray::GetTileArrayType()
+{
+	if (ensureMsgf(Tiles.Num() >= 3, TEXT("Called GetTileArrayType on too small TileArray.")))
+	{
+		if (Tiles[0].Color == Tiles[1].Color)
+		{
+			return ETileArrayType::AscendingNumbers;
+		}
+		else if (Tiles[0].Number == Tiles[1].Number)
+		{
+			return ETileArrayType::MatchingNumbers;
+		}
+		else
+		{
+			ensureMsgf(false, TEXT("Called GetTileArrayType on invalid TileArray."));
+		}
+	}
+
+	return ETileArrayType::AscendingNumbers;
+}
+
+FRummiTile& FRummiTileArray::GetFirstTile()
+{
+	return Tiles[0];
+}
+
+FRummiTile& FRummiTileArray::GetLastTile()
+{
+	return Tiles[Tiles.Num() - 1];
+}
+
 FRummiTileBoardSet::FRummiTileBoardSet(const FRummiTileArray& InSet)
 {
 	this->Tiles = InSet.Tiles;
@@ -252,6 +288,11 @@ void FRummiBoard::AddTileSet(const FRummiTileArray& NewTileSet)
 	TileSets.Add(FRummiTileBoardSet(NewTileSet));
 	bool bIsValidSet = TileSets.Last().EvaluateIsValidSet();
 	bIsValidBoard &= bIsValidSet;
+}
+
+void FRummiBoard::RemoveTileSet(int Index)
+{
+	TileSets.RemoveAtSwap(Index);
 }
 
 void FRummiTable::InitializeDeck(const FRummiRuleset& Ruleset)
