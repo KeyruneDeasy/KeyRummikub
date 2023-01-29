@@ -21,6 +21,23 @@ public:
 	URummiAi* Ai = nullptr;
 };
 
+USTRUCT(BlueprintType)
+struct KEYRUMMIKUB_API FKeyRummikubSettings
+{
+	GENERATED_BODY()
+
+public:
+	FKeyRummikubSettings() {}
+
+	// If true, the opening hand will be dealt instantly, instead of one tile at a time.
+	UPROPERTY(EditDefaultsOnly)
+	bool bFastDeal = false;
+
+	// The time in seconds between dealing each tile of the opening hand.
+	UPROPERTY(EditDefaultsOnly)
+	float DealInterval = 0.5f;
+};
+
 UCLASS()
 class KEYRUMMIKUB_API AKeyRummikubGameState : public AGameStateBase
 {
@@ -53,6 +70,9 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
+
+	UPROPERTY(EditDefaultsOnly)
+	FKeyRummikubSettings GameSettings;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TArray<FColor> Colors;

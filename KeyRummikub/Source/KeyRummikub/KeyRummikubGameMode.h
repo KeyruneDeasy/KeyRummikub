@@ -15,9 +15,18 @@ class KEYRUMMIKUB_API AKeyRummikubGameMode : public AGameModeBase
 	
 public:
 	AKeyRummikubGameMode();
-
+	
+	virtual void BeginPlay() override;
 	virtual void InitGameState();
 
 	UPROPERTY(BlueprintReadOnly)
 	class AKeyRummikubGameState* RummiGameState;
+
+private:
+	void DealOpeningHand();
+	void DealOpeningHand_TimerStep();
+	void DealOpeningHand_SingleTilePerPlayer();
+
+	FTimerHandle Timer;
+	int NumTilesRemainingToDeal = 0;
 };
