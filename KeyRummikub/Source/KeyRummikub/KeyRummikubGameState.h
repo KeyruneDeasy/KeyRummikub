@@ -73,6 +73,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SortHandByColor();
+
+	bool DeckIsEmpty() const;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;

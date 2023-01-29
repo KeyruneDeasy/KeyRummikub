@@ -235,7 +235,10 @@ void AKeyRummikubGameState::EndPlayerTurn()
 
 void AKeyRummikubGameState::EndTurn()
 {
-	DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
+	if (!DeckIsEmpty())
+	{
+		DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
+	}
 
 	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
 }
@@ -250,4 +253,9 @@ void AKeyRummikubGameState::SortHandByColor()
 {
 	HandGrid->SortIndividualTilesByColor();
 	UpdateLogicalRepresentationFromGrids();
+}
+
+bool AKeyRummikubGameState::DeckIsEmpty() const
+{
+	return Table.Deck.Tiles.IsEmpty();
 }
