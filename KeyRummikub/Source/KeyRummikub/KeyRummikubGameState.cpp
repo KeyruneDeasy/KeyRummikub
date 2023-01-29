@@ -239,3 +239,15 @@ void AKeyRummikubGameState::EndTurn()
 
 	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
 }
+
+void AKeyRummikubGameState::SortHandByAscendingNumber()
+{
+	HandGrid->SortIndividualTilesByAscendingNumber();
+	UpdateLogicalRepresentationFromGrids();
+}
+
+void AKeyRummikubGameState::SortHandByColor()
+{
+	HandGrid->SortIndividualTilesByColor();
+	UpdateLogicalRepresentationFromGrids();
+}

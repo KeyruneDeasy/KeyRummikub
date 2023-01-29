@@ -67,6 +67,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateGridsFromLogicalRepresentation();
+
+	UFUNCTION(BlueprintCallable)
+	void SortHandByAscendingNumber();
+
+	UFUNCTION(BlueprintCallable)
+	void SortHandByColor();
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;

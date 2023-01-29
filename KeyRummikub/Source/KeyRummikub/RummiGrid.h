@@ -20,6 +20,8 @@ public:
 	ARummiGrid();
 
 public:	
+	static const int MAX_GRID_SPACES = 1024;
+
 	virtual void Tick(float DeltaTime) override;
 
 	FVector GetWorldSpaceGridTileLocation(int X, int Y);
@@ -58,10 +60,14 @@ public:
 
 	void PopulateFromRummiBoard(const FRummiBoard& Board, const TArray<ARummiTileActor*>& TileActors);
 	void PopulateFromRummiHand(const FRummiTileArray& Hand, const TArray<ARummiTileActor*>& TileActors);
+	void ReorganiseTilesToMatchRummiHand(const FRummiTileArray& Hand);
 	void Clear();
 
 	UFUNCTION(BlueprintPure)
 	void GetWorldBounds(FVector& OutMin, FVector& OutMax);
+
+	void SortIndividualTilesByAscendingNumber();
+	void SortIndividualTilesByColor();
 
 protected:
 	virtual void BeginPlay() override;
@@ -101,5 +107,9 @@ private:
 	void DebugDrawGridLines_Internal(const FRummiBoard* Board);
 
 	int GetGridIndicesAsArrayIndex(int X, int Y);
+	void GetArrayIndexAsGridIndices(int Index, int& OutX, int& OutY);
 	ARummiTileActor* RemoveTileFromIndex(int Index);
+
+	void ClearAndReturnTiles(TArray<ARummiTileActor*>& OutTiles);
+	void Clear_Internal(TArray<ARummiTileActor*>* OutTiles);
 };

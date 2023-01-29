@@ -18,7 +18,9 @@ void ARummiGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GridSpaces.SetNum(GridSizeX * GridSizeY);
+	int NumGridSpaces = GridSizeX * GridSizeY;
+	ensureMsgf(NumGridSpaces <= MAX_GRID_SPACES, TEXT("ARummiGrid::MAX_GRID_SPACES is %d, must be at least %d."), MAX_GRID_SPACES, NumGridSpaces);
+	GridSpaces.SetNum(NumGridSpaces);
 }
 
 // Called every frame
@@ -208,6 +210,12 @@ int ARummiGrid::GetGridIndicesAsArrayIndex(int X, int Y)
 	return Y * GridSizeX + X;
 }
 
+void ARummiGrid::GetArrayIndexAsGridIndices(int Index, int& OutX, int& OutY)
+{
+	OutX = Index % GridSizeX;
+	OutY = Index / GridSizeX;
+}
+
 void ARummiGrid::PlaceTileAtFirstOpenGridLocation(ARummiTileActor* Tile)
 {
 	bool bTilePlaced = false;
@@ -373,15 +381,27 @@ void ARummiGrid::PopulateFromRummiHand(const FRummiTileArray& Hand, const TArray
 	}
 }
 
-void ARummiGrid::Clear()
+void ARummiGrid::ReorganiseTilesToMatchRummiHand(const FRummiTileArray& Hand)
 {
-	for (int i = 0; i < GridSpaces.Num(); ++i)
+	TArray<ARummiTileActor*> Tiles;
+	ClearAndReturnTiles(Tiles);
+	ensureMsgf(Tiles.Num() == Hand.NumTiles(), TEXT("Tile count mismatch in ReorganiseTilesToMatchRummiHand: %d in Hand, %d in Grid."), Hand.NumTiles(), Tiles.Num());
+#
+	for (ARummiTileActor* Tile : Tiles)
 	{
-		if (GridSpaces[i] != nullptr)
+		int Index = Hand.Tiles.Find(Tile->TileInfo);
+		if (ensureMsgf(Index >= 0, TEXT("ReorganiseTilesToMatchRummiHand called when Grid doesn't match given Hand (Grid but not Hand: <%s>)."), *Tile->TileInfo.GetAsLongString()))
 		{
-			RemoveTileFromIndex(i);
+			int X, Y;
+			GetArrayIndexAsGridIndices(Index, X, Y);
+			PlaceTileAtGridLocation(Tile, X, Y);
 		}
 	}
+}
+
+void ARummiGrid::Clear()
+{
+	Clear_Internal(nullptr);
 }
 
 void ARummiGrid::GetWorldBounds(FVector& OutMin, FVector& OutMax)
@@ -390,4 +410,41 @@ void ARummiGrid::GetWorldBounds(FVector& OutMin, FVector& OutMax)
 	FVector HalfSize = Size / 2.0f;
 	OutMin = ConvertLocalSpaceToWorldSpace(-HalfSize);
 	OutMax = ConvertLocalSpaceToWorldSpace(HalfSize);
+}
+
+void ARummiGrid::SortIndividualTilesByAscendingNumber()
+{
+	FRummiTileArray Tiles;
+	PopulateHandLogicalRepresentation(Tiles);
+	Tiles.SortByAscendingNumber();
+	ReorganiseTilesToMatchRummiHand(Tiles);
+}
+
+void ARummiGrid::SortIndividualTilesByColor()
+{
+	FRummiTileArray Tiles;
+	PopulateHandLogicalRepresentation(Tiles);
+	Tiles.SortByColor();
+	ReorganiseTilesToMatchRummiHand(Tiles);
+}
+
+void ARummiGrid::ClearAndReturnTiles(TArray<ARummiTileActor*>& OutTiles)
+{
+	Clear_Internal(&OutTiles);
+}
+
+void ARummiGrid::Clear_Internal(TArray<ARummiTileActor*>* OutTiles)
+{
+	for (int i = 0; i < GridSpaces.Num(); ++i)
+	{
+		ARummiTileActor* PotentialTile = GridSpaces[i];
+		if (PotentialTile != nullptr)
+		{
+			if (OutTiles != nullptr)
+			{
+				OutTiles->Add(PotentialTile);
+			}
+			RemoveTileFromIndex(i);
+		}
+	}
 }
