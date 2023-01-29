@@ -75,6 +75,14 @@ public:
 	void SortHandByColor();
 
 	bool DeckIsEmpty() const;
+
+	UFUNCTION(BlueprintCallable)
+	void RevertCurrentTurn();
+
+	UFUNCTION(BlueprintPure)
+	bool IsPlayerTurn() const;
+
+	void StartGame();
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
@@ -98,12 +106,17 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	ARummiGrid* HandGrid;
 
+	TArray<ARummiTileActor*> BoardLayoutAtStartOfTurn;
+	TArray<ARummiTileActor*> HandTilesAtStartOfTurn;
+
 	int DisplayedHandIndex = 0;
 
 	int CurrentTurnPlayerIndex = 0;
 
 	UPROPERTY(Transient)
 	TArray<FRummiPlayerInfo> PlayerInfos;
+
+	bool bGameStarted = false;
 
 private:
 	void CreateTileActors(const FRummiTileArray& Tiles);
@@ -119,4 +132,6 @@ private:
 	void EndPlayerTurn();
 	void EndTurn();
 	void RunAiTurns();
+
+	void SaveTableLayoutAtStartOfTurn();
 };

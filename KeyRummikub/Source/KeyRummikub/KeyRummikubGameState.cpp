@@ -241,6 +241,11 @@ void AKeyRummikubGameState::EndTurn()
 	}
 
 	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
+
+	if (IsPlayerTurn())
+	{
+		SaveTableLayoutAtStartOfTurn();
+	}
 }
 
 void AKeyRummikubGameState::SortHandByAscendingNumber()
@@ -258,4 +263,43 @@ void AKeyRummikubGameState::SortHandByColor()
 bool AKeyRummikubGameState::DeckIsEmpty() const
 {
 	return Table.Deck.Tiles.IsEmpty();
+}
+
+void AKeyRummikubGameState::RevertCurrentTurn()
+{
+	BoardGrid->RestoreLayout(BoardLayoutAtStartOfTurn);
+
+	for (ARummiTileActor* Tile : HandTilesAtStartOfTurn)
+	{
+		if (!HandGrid->ContainsTileActor(Tile))
+		{
+			HandGrid->PlaceTileAtFirstOpenGridLocation(Tile);
+		}
+	}
+
+	UpdateLogicalRepresentationFromGrids();
+}
+
+bool AKeyRummikubGameState::IsPlayerTurn() const
+{
+	return PlayerInfos[CurrentTurnPlayerIndex].Ai == nullptr;
+}
+
+void AKeyRummikubGameState::SaveTableLayoutAtStartOfTurn()
+{
+	BoardLayoutAtStartOfTurn.Empty();
+	BoardGrid->CopyLayout(BoardLayoutAtStartOfTurn);
+	HandTilesAtStartOfTurn.Empty();
+	HandGrid->CopyContainedTiles(HandTilesAtStartOfTurn);
+}
+
+void AKeyRummikubGameState::StartGame()
+{
+	bGameStarted = true;
+	CurrentTurnPlayerIndex = 0;
+
+	if (IsPlayerTurn())
+	{
+		SaveTableLayoutAtStartOfTurn();
+	}
 }

@@ -448,3 +448,55 @@ void ARummiGrid::Clear_Internal(TArray<ARummiTileActor*>* OutTiles)
 		}
 	}
 }
+
+void ARummiGrid::CopyLayout(TArray<ARummiTileActor*>& OutLayout) const
+{
+	OutLayout = GridSpaces;
+}
+
+void ARummiGrid::RestoreLayout(const TArray<ARummiTileActor*>& Layout)
+{
+	Clear();
+
+	ensureMsgf(Layout.Num() <= GridSpaces.Num(), TEXT("Attempting to push an oversized layout into a Grid."));
+
+	for (int i = 0; i < Layout.Num(); ++i)
+	{
+		ARummiTileActor* Tile = Layout[i];
+		if (Tile != nullptr)
+		{
+			int X, Y;
+			GetArrayIndexAsGridIndices(i, X, Y);
+			PlaceTileAtGridLocation(Tile, X, Y);
+		}
+	}
+}
+
+void ARummiGrid::CopyContainedTiles(TArray<ARummiTileActor*>& OutTiles) const
+{
+	for (ARummiTileActor* Tile : GridSpaces)
+	{
+		if (Tile != nullptr)
+		{
+			OutTiles.Add(Tile);
+		}
+	}
+}
+
+bool ARummiGrid::ContainsTileActor(const ARummiTileActor* Tile) const
+{
+	if (Tile == nullptr)
+	{
+		return false;
+	}
+
+	for (ARummiTileActor* GridTile : GridSpaces)
+	{
+		if (GridTile == Tile)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

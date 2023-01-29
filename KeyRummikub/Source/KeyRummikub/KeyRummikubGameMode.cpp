@@ -39,6 +39,7 @@ void AKeyRummikubGameMode::DealOpeningHand()
 		{
 			DealOpeningHand_SingleTilePerPlayer();
 		}
+		RummiGameState->StartGame();
 	}
 	else
 	{
@@ -54,6 +55,7 @@ void AKeyRummikubGameMode::DealOpeningHand_TimerStep()
 	if (NumTilesRemainingToDeal <= 0)
 	{
 		GetWorldTimerManager().ClearTimer(Timer);
+		RummiGameState->StartGame();
 	}
 }
 

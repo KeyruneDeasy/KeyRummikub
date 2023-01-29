@@ -69,6 +69,13 @@ public:
 	void SortIndividualTilesByAscendingNumber();
 	void SortIndividualTilesByColor();
 
+	void CopyLayout(TArray<ARummiTileActor*>& OutLayout) const;
+	void RestoreLayout(const TArray<ARummiTileActor*>& Layout);
+
+	void CopyContainedTiles(TArray<ARummiTileActor*>& OutTiles) const;
+
+	bool ContainsTileActor(const ARummiTileActor* Tile) const;
+
 protected:
 	virtual void BeginPlay() override;
 
