@@ -83,6 +83,9 @@ public:
 	bool IsPlayerTurn() const;
 
 	void StartGame();
+
+	UFUNCTION(BlueprintPure)
+	bool IsBoardValid();
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;

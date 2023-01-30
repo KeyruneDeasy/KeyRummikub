@@ -298,8 +298,15 @@ void AKeyRummikubGameState::StartGame()
 	bGameStarted = true;
 	CurrentTurnPlayerIndex = 0;
 
+	Table.Board.EvaluateIsValidBoard();
+
 	if (IsPlayerTurn())
 	{
 		SaveTableLayoutAtStartOfTurn();
 	}
+}
+
+bool AKeyRummikubGameState::IsBoardValid()
+{
+	return Table.Board.bIsValidBoard;
 }
