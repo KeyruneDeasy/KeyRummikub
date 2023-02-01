@@ -149,7 +149,10 @@ bool AKeyRummikubGameState::TryMoveTileToWorldLocation(ARummiTileActor* Tile, co
 		HandGrid->GetGridIndexAtWorldLocation(WorldLocation, NewX, NewY, bIsOnGrid);
 		if (bIsOnGrid)
 		{
-			return TryMoveTile(Tile, OldGrid, OldX, OldY, HandGrid, NewX, NewY);
+			if (HandTilesAtStartOfTurn.Contains(Tile))
+			{
+				return TryMoveTile(Tile, OldGrid, OldX, OldY, HandGrid, NewX, NewY);
+			}
 		}
 	}
 	return false;
