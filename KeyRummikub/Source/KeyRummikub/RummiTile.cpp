@@ -80,8 +80,10 @@ void FRummiTileArray::RemoveTile(const FRummiTile& Tile)
 		if (ThisTile.Id == Tile.Id)
 		{
 			Tiles.RemoveAt(i);
+			return;
 		}
 	}
+	ensureMsgf(false, TEXT("Tried to remove tile '%s' from a RummiTileArray that doesn't contain it."), *Tile.GetAsShortString());
 }
 
 void FRummiTileArray::SortByAscendingNumber()

@@ -7,7 +7,10 @@
 bool URummiAi::Update(float DeltaTime, AKeyRummikubGameState* GameState)
 {
 	DetermineTargetBoardState(GameState);
-	SnapToTargetBoardState(GameState);
+	if (GameState->CurrentPlayerHasEverPlayedTiles() || TilesToPlayFromHand.GetTotalValue() >= GameState->Ruleset.FirstTilesRequiredValue)
+	{
+		SnapToTargetBoardState(GameState);
+	}
 	return true;
 }
 
@@ -81,6 +84,12 @@ void URummiAi::SnapToTargetBoardState(AKeyRummikubGameState* GameState)
 	for (const FRummiTile& Tile : TilesToPlayFromHand.Tiles)
 	{
 		GameState->Table.Hands[GameState->CurrentTurnPlayerIndex].RemoveTile(Tile);
+		GameState->TilesPlayedThisTurn.Add(GameState->GetActorFromTileInfo(Tile));
 	}
 	GameState->UpdateGridsFromLogicalRepresentation();
+}
+
+void URummiAi::NotifyTurnEnded()
+{
+	TilesToPlayFromHand.Tiles.Empty();
 }

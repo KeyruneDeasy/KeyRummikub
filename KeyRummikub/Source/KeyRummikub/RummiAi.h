@@ -21,6 +21,9 @@ public:
 	void DetermineTargetBoardState(AKeyRummikubGameState* GameState);
 	void SnapToTargetBoardState(AKeyRummikubGameState* GameState);
 
+	void NotifyTurnEnded();
+
+private:
 	FRummiBoard TargetBoardState;
 	FRummiTileArray TilesToPlayFromHand;
 };

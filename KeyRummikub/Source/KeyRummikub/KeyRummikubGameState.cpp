@@ -256,8 +256,13 @@ void AKeyRummikubGameState::EndTurn()
 	{
 		PlayerInfos[CurrentTurnPlayerIndex].bHasPlayedFirstTiles = true;
 	}
-
 	TilesPlayedThisTurn.Empty();
+
+	if (!IsPlayerTurn())
+	{
+		PlayerInfos[CurrentTurnPlayerIndex].Ai->NotifyTurnEnded();
+	}
+
 
 	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
 
