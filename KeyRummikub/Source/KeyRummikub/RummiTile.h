@@ -34,6 +34,7 @@ public:
 	int NumPlayers = 2;
 	UPROPERTY(BlueprintReadOnly)
 	int StartingHandSize = 14;
+	int FirstTilesRequiredValue = 30;
 };
 
 USTRUCT(BlueprintType)
@@ -87,6 +88,7 @@ public:
 	ETileArrayType GetTileArrayType();
 	FRummiTile& GetFirstTile();
 	FRummiTile& GetLastTile();
+	int GetTotalValue() const;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;

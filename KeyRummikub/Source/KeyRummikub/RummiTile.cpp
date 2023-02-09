@@ -250,6 +250,16 @@ FRummiTile& FRummiTileArray::GetLastTile()
 	return Tiles[Tiles.Num() - 1];
 }
 
+int FRummiTileArray::GetTotalValue() const
+{
+	int TotalValue = 0;
+	for (const FRummiTile& Tile : Tiles)
+	{
+		TotalValue += Tile.Number;
+	}
+	return TotalValue;
+}
+
 FRummiTileBoardSet::FRummiTileBoardSet(const FRummiTileArray& InSet)
 {
 	this->Tiles = InSet.Tiles;

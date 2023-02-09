@@ -19,6 +19,7 @@ struct KEYRUMMIKUB_API FRummiPlayerInfo
 public:
 	UPROPERTY(Transient)
 	URummiAi* Ai = nullptr;
+	bool bHasPlayedFirstTiles = false;
 };
 
 USTRUCT(BlueprintType)
@@ -85,7 +86,12 @@ public:
 	void StartGame();
 
 	UFUNCTION(BlueprintPure)
-	bool IsBoardValid();
+	bool IsBoardValid() const;
+
+	UFUNCTION(BlueprintPure)
+	bool CanEndTurn() const;
+
+	bool CurrentPlayerHasEverPlayedTiles() const;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;
@@ -111,6 +117,7 @@ public:
 
 	TArray<ARummiTileActor*> BoardLayoutAtStartOfTurn;
 	TArray<ARummiTileActor*> HandTilesAtStartOfTurn;
+	TArray<ARummiTileActor*> TilesPlayedThisTurn;
 
 	int DisplayedHandIndex = 0;
 
@@ -137,4 +144,5 @@ private:
 	void RunAiTurns();
 
 	void SaveTableLayoutAtStartOfTurn();
+	int GetValuePlayedThisTurn() const;
 };

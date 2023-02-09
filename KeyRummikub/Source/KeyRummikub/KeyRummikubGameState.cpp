@@ -170,6 +170,15 @@ bool AKeyRummikubGameState::TryMoveTile(ARummiTileActor* Tile, ARummiGrid* OldGr
 		return false;
 	}
 
+	if (OldGrid == HandGrid && NewGrid == BoardGrid)
+	{
+		TilesPlayedThisTurn.Add(Tile);
+	}
+	else if (OldGrid == HandGrid && NewGrid == BoardGrid)
+	{
+		TilesPlayedThisTurn.Remove(Tile);
+	}
+
 	OldGrid->RemoveTileFromGridLocation(OldX, OldY);
 
 	/*if (OldGrid == HandGrid)
@@ -243,6 +252,13 @@ void AKeyRummikubGameState::EndTurn()
 		DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
 	}
 
+	if (TilesPlayedThisTurn.Num() > 0)
+	{
+		PlayerInfos[CurrentTurnPlayerIndex].bHasPlayedFirstTiles = true;
+	}
+
+	TilesPlayedThisTurn.Empty();
+
 	CurrentTurnPlayerIndex = (CurrentTurnPlayerIndex + 1) % PlayerInfos.Num();
 
 	if (IsPlayerTurn())
@@ -279,6 +295,7 @@ void AKeyRummikubGameState::RevertCurrentTurn()
 			HandGrid->PlaceTileAtFirstOpenGridLocation(Tile);
 		}
 	}
+	TilesPlayedThisTurn.Empty();
 
 	UpdateLogicalRepresentationFromGrids();
 }
@@ -309,7 +326,28 @@ void AKeyRummikubGameState::StartGame()
 	}
 }
 
-bool AKeyRummikubGameState::IsBoardValid()
+bool AKeyRummikubGameState::IsBoardValid() const
 {
 	return Table.Board.bIsValidBoard;
+}
+
+int AKeyRummikubGameState::GetValuePlayedThisTurn() const
+{
+	int ValuePlayed = 0;
+	for (ARummiTileActor* Tile : TilesPlayedThisTurn)
+	{
+		ValuePlayed += Tile->TileInfo.Number;
+	}
+	return ValuePlayed;
+}
+
+bool AKeyRummikubGameState::CanEndTurn() const
+{
+	return IsBoardValid() &&
+		(TilesPlayedThisTurn.IsEmpty() || CurrentPlayerHasEverPlayedTiles() || GetValuePlayedThisTurn() >= Ruleset.FirstTilesRequiredValue);
+}
+
+bool AKeyRummikubGameState::CurrentPlayerHasEverPlayedTiles() const
+{
+	return PlayerInfos[CurrentTurnPlayerIndex].bHasPlayedFirstTiles;
 }
