@@ -262,6 +262,18 @@ int FRummiTileArray::GetTotalValue() const
 	return TotalValue;
 }
 
+bool FRummiTileArray::ContainsColor(int Color) const
+{
+	for (const FRummiTile& Tile : Tiles)
+	{
+		if (Tile.Color == Color)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 FRummiTileBoardSet::FRummiTileBoardSet(const FRummiTileArray& InSet)
 {
 	this->Tiles = InSet.Tiles;

@@ -67,6 +67,19 @@ void URummiAi::DetermineTargetBoardState(AKeyRummikubGameState* GameState)
 								PLAY_TILE_AND_BREAK(Tile);
 							}
 						}
+						break;
+					}
+					case ETileArrayType::MatchingNumbers:
+					{
+						if (Tile.Number == Subset.GetFirstTile().Number)
+						{
+							if (!Subset.ContainsColor(Tile.Color))
+							{
+								Subset.AddTileToStart(Tile);
+								PLAY_TILE_AND_BREAK(Tile);
+							}
+						}
+						break;
 					}
 				}
 				if (bPlayedTile)

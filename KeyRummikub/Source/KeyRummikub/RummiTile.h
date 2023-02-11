@@ -90,6 +90,7 @@ public:
 	FRummiTile& GetFirstTile();
 	FRummiTile& GetLastTile();
 	int GetTotalValue() const;
+	bool ContainsColor(int Color) const;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FRummiTile> Tiles;
