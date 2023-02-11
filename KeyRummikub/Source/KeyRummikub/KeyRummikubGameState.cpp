@@ -247,7 +247,7 @@ void AKeyRummikubGameState::EndPlayerTurn()
 
 void AKeyRummikubGameState::EndTurn()
 {
-	if (!DeckIsEmpty())
+	if (TilesPlayedThisTurn.Num() == 0 && !DeckIsEmpty())
 	{
 		DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
 	}
