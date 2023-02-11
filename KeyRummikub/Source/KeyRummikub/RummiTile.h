@@ -22,18 +22,19 @@ struct KEYRUMMIKUB_API FRummiRuleset
 public:
 	FRummiRuleset() {}
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int NumColors = 4;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int NumNumbers = 13;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int NumRepetitions = 2; // The number of copies of each unique tile
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int LowestNumber = 1;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int NumPlayers = 2;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int StartingHandSize = 14;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int FirstTilesRequiredValue = 30;
 };
 
