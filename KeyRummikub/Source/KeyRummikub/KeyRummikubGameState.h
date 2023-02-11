@@ -75,6 +75,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SortHandByColor();
 
+	int GetNumTilesInDeck() const;
 	bool DeckIsEmpty() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -92,6 +93,12 @@ public:
 	bool CanEndTurn() const;
 
 	bool CurrentPlayerHasEverPlayedTiles() const;
+
+	int GetNumTilesInPlayerHand(int PlayerIndex) const;
+	bool IsPlayerAiControlled(int PlayerIndex) const;
+
+	UFUNCTION(BlueprintPure)
+	FString GetAiPlayerTileCountsText() const;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FRummiRuleset Ruleset;

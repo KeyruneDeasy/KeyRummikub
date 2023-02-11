@@ -356,3 +356,36 @@ bool AKeyRummikubGameState::CurrentPlayerHasEverPlayedTiles() const
 {
 	return PlayerInfos[CurrentTurnPlayerIndex].bHasPlayedFirstTiles;
 }
+
+int AKeyRummikubGameState::GetNumTilesInDeck() const
+{
+	return Table.Deck.NumTiles();
+}
+
+int AKeyRummikubGameState::GetNumTilesInPlayerHand(int PlayerIndex) const
+{
+	ensureMsgf(PlayerIndex > 0 && PlayerIndex < PlayerInfos.Num(), TEXT("Invalid player index %d."));
+
+	return Table.Hands[PlayerIndex].NumTiles();
+}
+
+bool AKeyRummikubGameState::IsPlayerAiControlled(int PlayerIndex) const
+{
+	ensureMsgf(PlayerIndex >= 0 && PlayerIndex < PlayerInfos.Num(), TEXT("Invalid player index %d."));
+
+	return PlayerInfos[PlayerIndex].Ai != nullptr;
+}
+
+FString AKeyRummikubGameState::GetAiPlayerTileCountsText() const
+{
+	FString OutText = FString::Printf(TEXT("Deck: %d\n\n"), GetNumTilesInDeck());
+	for (int i = 0; i < PlayerInfos.Num(); ++i)
+	{
+		if (IsPlayerAiControlled(i))
+		{
+			OutText.Append(FString::Printf(TEXT("Player %d: %d\n"), i + 1, GetNumTilesInPlayerHand(i)));
+		}
+	}
+	OutText.RemoveFromEnd("\n");
+	return OutText;
+}
