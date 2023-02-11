@@ -69,6 +69,10 @@ void URummiAi::DetermineTargetBoardState(AKeyRummikubGameState* GameState)
 						}
 					}
 				}
+				if (bPlayedTile)
+				{
+					break;
+				}
 			}
 			if (bPlayedTile)
 			{
