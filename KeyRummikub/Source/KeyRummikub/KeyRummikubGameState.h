@@ -20,6 +20,7 @@ public:
 	UPROPERTY(Transient)
 	URummiAi* Ai = nullptr;
 	bool bHasPlayedFirstTiles = false;
+	TArray<ARummiTileActor*> BoardLayoutAtEndOfLastTurn;
 };
 
 USTRUCT(BlueprintType)

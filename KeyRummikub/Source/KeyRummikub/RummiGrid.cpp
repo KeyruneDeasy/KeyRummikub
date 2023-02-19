@@ -99,6 +99,7 @@ void ARummiGrid::DebugDrawGridCoords()
 void ARummiGrid::DebugDrawGridLines_Internal(const FRummiBoard* Board)
 {
 	UWorld* World = GetWorld();
+	bool bShowNewTiles = GridSpaces == GridSpaces_StartOfThisTurn && !bCachedLayoutsAreSame;
 	for (int X = -1; X < GridSizeX; ++X)
 	{
 		for (int Y = -1; Y < GridSizeY; ++Y)
@@ -126,26 +127,56 @@ void ARummiGrid::DebugDrawGridLines_Internal(const FRummiBoard* Board)
 					TileRight = GridSpaces[Index];
 				}
 
-				bool bIsThisTileInInvalidSet = ThisTile != nullptr && !Board->IsTileInValidSet(ThisTile->TileInfo);
-
-				if (bIsThisTileInInvalidSet)
+				if (bShowNewTiles)
 				{
-					ColorVertical = FColor::Red;
-					ColorHorizontal = FColor::Red;
+					// Choose the colour based on what tiles have been played since the current player's previous turn.
+
+					auto IsTileNew = [this](ARummiTileActor* Tile)
+					{
+						return Tile != nullptr && !GridSpaces_EndOfLastTurn.Contains(Tile);
+					};
+
+					if (IsTileNew(ThisTile))
+					{
+						ColorVertical = FColor::Orange;
+						ColorHorizontal = FColor::Orange;
+					}
+					else
+					{
+						if (IsTileNew(TileRight))
+						{
+							ColorVertical = FColor::Orange;
+						}
+						if (IsTileNew(TileBelow))
+						{
+							ColorHorizontal = FColor::Orange;
+						}
+					}
 				}
 				else
 				{
-					bool bIsThisTileInValidSet = ThisTile != nullptr && !bIsThisTileInInvalidSet;
+					// Choose the colour based on set validity.
+					bool bIsThisTileInInvalidSet = ThisTile != nullptr && !Board->IsTileInValidSet(ThisTile->TileInfo);
 
-					if (ThisTile != nullptr || TileBelow != nullptr)
+					if (bIsThisTileInInvalidSet)
 					{
-						bool bIsTileBelowInInvalidSet = TileBelow != nullptr && !Board->IsTileInValidSet(TileBelow->TileInfo);
-						ColorHorizontal = bIsThisTileInInvalidSet || bIsTileBelowInInvalidSet ? FColor::Red : FColor::Green; 
+						ColorVertical = FColor::Red;
+						ColorHorizontal = FColor::Red;
 					}
-					if (ThisTile != nullptr || TileRight != nullptr)
+					else
 					{
-						bool bIsTileRightInInvalidSet = TileRight != nullptr && !Board->IsTileInValidSet(TileRight->TileInfo);
-						ColorVertical = bIsThisTileInInvalidSet || bIsTileRightInInvalidSet ? FColor::Red : FColor::Green;
+						bool bIsThisTileInValidSet = ThisTile != nullptr && !bIsThisTileInInvalidSet;
+
+						if (ThisTile != nullptr || TileBelow != nullptr)
+						{
+							bool bIsTileBelowInInvalidSet = TileBelow != nullptr && !Board->IsTileInValidSet(TileBelow->TileInfo);
+							ColorHorizontal = bIsThisTileInInvalidSet || bIsTileBelowInInvalidSet ? FColor::Red : FColor::Green;
+						}
+						if (ThisTile != nullptr || TileRight != nullptr)
+						{
+							bool bIsTileRightInInvalidSet = TileRight != nullptr && !Board->IsTileInValidSet(TileRight->TileInfo);
+							ColorVertical = bIsThisTileInInvalidSet || bIsTileRightInInvalidSet ? FColor::Red : FColor::Green;
+						}
 					}
 				}
 			}
@@ -499,4 +530,11 @@ bool ARummiGrid::ContainsTileActor(const ARummiTileActor* Tile) const
 	}
 
 	return false;
+}
+
+void ARummiGrid::SetUpCachedLayouts(const TArray<ARummiTileActor*>& LayoutAtEndOfLastTurn)
+{
+	GridSpaces_EndOfLastTurn = LayoutAtEndOfLastTurn;
+	GridSpaces_StartOfThisTurn = GridSpaces;
+	bCachedLayoutsAreSame = GridSpaces_StartOfThisTurn == LayoutAtEndOfLastTurn;
 }

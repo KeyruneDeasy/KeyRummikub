@@ -71,6 +71,7 @@ public:
 
 	void CopyLayout(TArray<ARummiTileActor*>& OutLayout) const;
 	void RestoreLayout(const TArray<ARummiTileActor*>& Layout);
+	void SetUpCachedLayouts(const TArray<ARummiTileActor*>& LayoutAtEndOfLastTurn);
 
 	void CopyContainedTiles(TArray<ARummiTileActor*>& OutTiles) const;
 
@@ -91,6 +92,11 @@ private:
 	float GridSpacingY = 200.0f;
 
 	TArray<ARummiTileActor*> GridSpaces;
+
+	TArray<ARummiTileActor*> GridSpaces_StartOfThisTurn;
+	TArray<ARummiTileActor*> GridSpaces_EndOfLastTurn;
+
+	bool bCachedLayoutsAreSame;
 
 	FVector ConvertLocalSpaceToWorldSpace(const FVector& LocalSpaceVector) const;
 	FVector ConvertWorldSpaceToLocalSpace(const FVector& LocalSpaceVector) const;

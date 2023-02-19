@@ -247,6 +247,11 @@ void AKeyRummikubGameState::EndPlayerTurn()
 
 void AKeyRummikubGameState::EndTurn()
 {
+	if (IsPlayerTurn())
+	{
+		BoardGrid->CopyLayout(PlayerInfos[CurrentTurnPlayerIndex].BoardLayoutAtEndOfLastTurn);
+	}
+
 	if (TilesPlayedThisTurn.Num() == 0 && !DeckIsEmpty())
 	{
 		DrawCardFromDeckToHand(CurrentTurnPlayerIndex);
@@ -269,6 +274,7 @@ void AKeyRummikubGameState::EndTurn()
 	if (IsPlayerTurn())
 	{
 		SaveTableLayoutAtStartOfTurn();
+		BoardGrid->SetUpCachedLayouts(PlayerInfos[CurrentTurnPlayerIndex].BoardLayoutAtEndOfLastTurn);
 	}
 }
 
